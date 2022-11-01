@@ -30,7 +30,7 @@ CREATE TABLE `Comment` (
   CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`),
   CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`),
   CONSTRAINT `comment_ibfk_3` FOREIGN KEY (`parent_comment_id`) REFERENCES `Comment` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -318,5 +318,6 @@ INSERT INTO `schema_migrations` (version) VALUES
   ('20221101142604'),
   ('20221101144645'),
   ('20221101145721'),
-  ('20221101160807');
+  ('20221101160807'),
+  ('20221101172400');
 UNLOCK TABLES;
