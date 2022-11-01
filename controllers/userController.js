@@ -2,9 +2,12 @@ const userService = require('../services/userService');
 
 const createUser = async (req, res) => {
   try {
-    const { email, password, password1, name, profile_image } = req.body
+    const 
+    { 
+      login_id, password, password_check, kor_name, eng_name, country, email, profile_image 
+    } = req.body
 
-    const REQUIRE_KEYS = [email, password, password1, name];
+    const REQUIRE_KEYS = [login_id, password, password_check, kor_name, eng_name, email];
 
     REQUIRE_KEYS.map((key) => {
       if (!key) {
@@ -12,7 +15,9 @@ const createUser = async (req, res) => {
       }
     })
 
-    const result = await userService.createUser(email, password, password1, name, profile_image);
+    const result = await userService.createUser(
+      login_id, password, password_check, kor_name, eng_name, country, email, profile_image
+      );
 
     res.status(201).json({ message: "userCreated" });
   } catch (err) {

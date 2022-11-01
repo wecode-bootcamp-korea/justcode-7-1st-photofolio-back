@@ -2,7 +2,9 @@ const userDao = require('../models/userDao');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const createUser = async (email, password, password1, name, profile_image) => {
+const createUser = async (
+  login_id, password, password_check, kor_name, eng_name, country, email, profile_image
+  ) => {
 
   if (!email.includes('@') || !email.includes('.')) { 
     throw new Error('EMAIL_INVALID');
@@ -12,7 +14,7 @@ const createUser = async (email, password, password1, name, profile_image) => {
     throw new Error('PASSWORD_TOO_SHORT');
   }
 
-  if (password !== password1) {
+  if (password !== password_check) {
     throw new Error('PASSWORD_DONT_SAME');
   }
 
@@ -22,7 +24,9 @@ const createUser = async (email, password, password1, name, profile_image) => {
     throw new Error("USER_ALREADY_EXISTS");
   }
 
-  const createdUser = await userDao.createUserInDb(email, name, password, profile_image);
+  const createdUser = await userDao.createUserInDb(
+    login_id, password, kor_name, eng_name, country, email, profile_image
+    );
 
   return createdUser
 }

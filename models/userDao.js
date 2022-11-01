@@ -19,19 +19,22 @@ myDataSource.initialize()
 const getUserByEmail = async (email) => {
 
   const user = await myDataSource.query(`
-    SELECT id, email FROM users WHERE email= '${email}'
+    SELECT id, email FROM user WHERE email= '${email}'
   `);
   return user
 }
 
-const createUserInDb = async (email, name, password, profile_image) => {
+const createUserInDb = async (
+  login_id, password, kor_name, eng_name, country, email, profile_image
+  ) => {
 
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, (err, hash) => {
       myDataSource.query(`
-    INSERT INTO users (email, name, password, profile_image)
+    INSERT INTO user (login_id, password, kor_name, eng_name, country, email, profile_image)
     VALUES (
-      '${email}', '${name}', '${hash}', '${profile_image}'
+      '${login_id}', '${hash}}', '${kor_name}', '${eng_name}', '${country}', '${email}'
+      , '${profile_image}'
     )
   `);
     });
