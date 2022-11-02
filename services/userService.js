@@ -62,12 +62,12 @@ const createUser = async (
     throw new Error ("영어만 가능해요.");
   }  
 
-  if (country.search(num) > 0 || country.search(korAll) > 0 || country.search(spe) > 0) {
-    throw new Error ("한글로 써주세요.");
+  if (country.search(num) > 0 || country.search(eng) > 0 || country.search(spe) > 0) {
+    throw new Error ("한국 단어로 기입해 주세요.");
   } 
 
   if (country.search(korWord) < 0 || country.search(korJaMo) > 0) {
-    throw new Error ("자음, 모음은 안되요.");
+    throw new Error ("한국 단어로 기입해 주세요.");
   }
   
   if (!reg_email.test(email)) {
