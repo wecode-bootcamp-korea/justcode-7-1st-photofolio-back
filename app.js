@@ -1,7 +1,7 @@
 const express = require('express');
+const cors = require('cors');
 const routes = require('./routes');
 const morgan = require('morgan');
-const cors = require('cors');
 
 var corsOptions = {
   origin: '*',
@@ -16,7 +16,14 @@ const createApp = () => {
   app.use(routes);
   app.use(morgan('combined'));
 
+
+  app.use((err, req, res, next) => {
+    const { status, message } = err
+    console.error(err);
+    res.status(status || 500).json({ message });
+  })
+
   return app;
 };
 
-module.exports = createApp;
+module.exports = {createApp}

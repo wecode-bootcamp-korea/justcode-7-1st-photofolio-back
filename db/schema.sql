@@ -136,6 +136,31 @@ CREATE TABLE `upload_file` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `user`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `login_id` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `kor_name` varchar(50) NOT NULL,
+  `eng_name` varchar(50) NOT NULL,
+  `country` varchar(50) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `profile_image` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `login_id` (`login_id`),
+  UNIQUE KEY `unique_name` (`login_id`,`email`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `email_2` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `User_Admin`
 --
 
@@ -311,5 +336,6 @@ CREATE TABLE `Works_tag_names` (
 
 LOCK TABLES `schema_migrations` WRITE;
 INSERT INTO `schema_migrations` (version) VALUES
-  ('20221101085413');
+  ('20221101085413'),
+  ('20221101142823');
 UNLOCK TABLES;
