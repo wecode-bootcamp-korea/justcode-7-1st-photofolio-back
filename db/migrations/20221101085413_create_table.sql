@@ -1,11 +1,12 @@
 -- migrate:up
 CREATE TABLE IF NOT EXISTS `Users` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `login_id` varchar(50) NOT NULL UNIQUE,
   `kor_name` varchar(50) NOT NULL,
   `eng_name` varchar(50) NOT NULL,
   `profile_image` varchar(255) NOT NULL,
-  `default_email` varchar(50) NOT NULL,
-  `external_email` varchar(50) NOT NULL,
+  `default_email` varchar(50) NOT NULL UNIQUE,
+  `external_email` varchar(50) UNIQUE,
   `introduction` varchar(150),
   `description` varchar(800),
   `country` varchar(100),
@@ -27,11 +28,11 @@ CREATE TABLE IF NOT EXISTS `Works_Posting` (
   `category_id` int NOT NULL,
   `title` varchar(100) NOT NULL,
   `content` varchar(255),
-  `view_count` int,
+  `view_count` int DEFAULT "0",
   `scheduled_at` timestamp,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
   `updated_at` timestamp,
-  `status_id` int NOT NULL
+  `status_id` int NOT NULL DEFAULT "1"
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Category` (
@@ -58,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `file_sort` (
 );
 
 CREATE TABLE IF NOT EXISTS `public_status` (
-  `id` int PRIMARY KEY DEFAULT "1",
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `status` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
   `updated_at` timestamp
@@ -90,14 +91,14 @@ CREATE TABLE IF NOT EXISTS `Comment` (
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Sympathy` (
-  `id` tinyint PRIMARY KEY,
+  `id` tinyint PRIMARY KEY AUTO_INCREMENT,
   `sympathy_sort` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
   `updated_at` timestamp
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Sympathy_Count` (
-  `id` int PRIMARY KEY,
+  `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `sympathy_id` tinyint NOT NULL,
   `posting_id` int NOT NULL,
