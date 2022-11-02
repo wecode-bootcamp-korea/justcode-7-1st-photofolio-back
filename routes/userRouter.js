@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const {validateToken} = require('../middlewares/validateToken')
+const { validateToken } = require('../middlewares/validateToken');
 const userController = require('../controllers/userController');
 
 //회원가입
