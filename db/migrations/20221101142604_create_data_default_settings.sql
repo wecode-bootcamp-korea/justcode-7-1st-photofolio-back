@@ -1,8 +1,8 @@
 -- migrate:up
-insert into Works_Category (category_name) values ('fashion');
-insert into Works_Category (category_name) values ('pattern & texture');
-insert into Works_Category (category_name) values ('travel');
-insert into Works_Category (category_name) values ('animal');
+insert into Works_Category (category_name, eng_category_name) values ('패션', 'fashion');
+insert into Works_Category (category_name, eng_category_name) values ('패턴', 'pattern');
+insert into Works_Category (category_name, eng_category_name) values ('여행', 'travel');
+insert into Works_Category (category_name, eng_category_name) values ('동물', 'animal');
 
 insert into public_status (status) values ('public');
 insert into public_status (status) values ('private');
