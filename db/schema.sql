@@ -22,7 +22,7 @@ CREATE TABLE `Comment` (
   `parent_comment_id` int DEFAULT NULL,
   `comment` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `posting_id` (`posting_id`),
@@ -59,7 +59,7 @@ CREATE TABLE `Follow` (
   `following_id` int NOT NULL,
   `follower_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `following_id` (`following_id`),
   KEY `follower_id` (`follower_id`),
@@ -80,7 +80,7 @@ CREATE TABLE `Notice` (
   `title` varchar(255) DEFAULT NULL,
   `content` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `User_Admin_id` (`User_Admin_id`),
   CONSTRAINT `notice_ibfk_1` FOREIGN KEY (`User_Admin_id`) REFERENCES `User_Admin` (`id`)
@@ -97,7 +97,7 @@ CREATE TABLE `public_status` (
   `id` int NOT NULL AUTO_INCREMENT,
   `status` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -126,7 +126,7 @@ CREATE TABLE `upload_file` (
   `file_sort_id` int NOT NULL,
   `upload_url` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `posting_id` (`posting_id`),
   KEY `file_sort_id` (`file_sort_id`),
@@ -170,7 +170,7 @@ CREATE TABLE `User_Admin` (
   `id` int NOT NULL AUTO_INCREMENT,
   `users_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `users_id` (`users_id`),
   CONSTRAINT `user_admin_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `Users` (`id`)
@@ -186,6 +186,7 @@ CREATE TABLE `User_Admin` (
 CREATE TABLE `Users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `login_id` varchar(50) NOT NULL,
+  `password` varchar(100) NOT NULL,
   `kor_name` varchar(50) NOT NULL,
   `eng_name` varchar(50) NOT NULL,
   `profile_image` varchar(255) NOT NULL,
@@ -196,7 +197,7 @@ CREATE TABLE `Users` (
   `country` varchar(100) DEFAULT NULL,
   `website_url` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `login_id` (`login_id`),
   UNIQUE KEY `default_email` (`default_email`),
@@ -213,8 +214,9 @@ CREATE TABLE `Users` (
 CREATE TABLE `Works_Category` (
   `id` int NOT NULL AUTO_INCREMENT,
   `category_name` varchar(255) NOT NULL,
+  `eng_category_name` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -234,7 +236,7 @@ CREATE TABLE `Works_Posting` (
   `view_count` int DEFAULT '0',
   `scheduled_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status_id` int NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
@@ -257,7 +259,7 @@ CREATE TABLE `Works_Posting_tags` (
   `tag_id` int NOT NULL,
   `posting_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `tag_id` (`tag_id`),
   KEY `posting_id` (`posting_id`),
@@ -276,7 +278,7 @@ CREATE TABLE `Works_Sympathy` (
   `id` tinyint NOT NULL AUTO_INCREMENT,
   `sympathy_sort` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -293,7 +295,7 @@ CREATE TABLE `Works_Sympathy_Count` (
   `sympathy_id` tinyint NOT NULL,
   `posting_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `sympathy_id` (`sympathy_id`),
@@ -314,7 +316,7 @@ CREATE TABLE `Works_tag_names` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -341,5 +343,11 @@ CREATE TABLE `Works_tag_names` (
 LOCK TABLES `schema_migrations` WRITE;
 INSERT INTO `schema_migrations` (version) VALUES
   ('20221101085413'),
-  ('20221101142823');
+  ('20221101104906'),
+  ('20221101142604'),
+  ('20221101143337'),
+  ('20221101144645'),
+  ('20221101145721'),
+  ('20221101160807'),
+  ('20221101172400');
 UNLOCK TABLES;

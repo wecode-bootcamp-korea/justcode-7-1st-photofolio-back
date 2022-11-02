@@ -2,6 +2,7 @@
 CREATE TABLE IF NOT EXISTS `Users` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `login_id` varchar(50) NOT NULL UNIQUE,
+  `password` varchar(100) NOT NULL,
   `kor_name` varchar(50) NOT NULL,
   `eng_name` varchar(50) NOT NULL,
   `profile_image` varchar(255) NOT NULL,
@@ -12,14 +13,14 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `country` varchar(100),
   `website_url` varchar(255),
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `User_Admin` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
   `users_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Posting` (
@@ -31,15 +32,16 @@ CREATE TABLE IF NOT EXISTS `Works_Posting` (
   `view_count` int DEFAULT "0",
   `scheduled_at` timestamp,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp,
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP,
   `status_id` int NOT NULL DEFAULT "1"
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Category` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `category_name` varchar(255) NOT NULL,
+  `eng_category_name` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `upload_file` (
@@ -48,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `upload_file` (
   `file_sort_id` int NOT NULL,
   `upload_url` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `file_sort` (
@@ -62,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `public_status` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `status` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Posting_tags` (
@@ -70,14 +72,14 @@ CREATE TABLE IF NOT EXISTS `Works_Posting_tags` (
   `tag_id` int NOT NULL,
   `posting_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Works_tag_names` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Comment` (
@@ -87,14 +89,14 @@ CREATE TABLE IF NOT EXISTS `Comment` (
   `parent_comment_id` int,
   `comment` varchar(255),
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Sympathy` (
   `id` tinyint PRIMARY KEY AUTO_INCREMENT,
   `sympathy_sort` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Works_Sympathy_Count` (
@@ -103,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `Works_Sympathy_Count` (
   `sympathy_id` tinyint NOT NULL,
   `posting_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Notice` (
@@ -112,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `Notice` (
   `title` varchar(255),
   `content` varchar(255),
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS `Follow` (
@@ -120,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `Follow` (
   `following_id` int NOT NULL,
   `follower_id` int NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT NOW(),
-  `updated_at` timestamp
+  `updated_at` timestamp DEFAULT NOW() ON UPDATE CURRENT_TIMESTAMP
 );
 
 ALTER TABLE `User_Admin` ADD FOREIGN KEY (`users_id`) REFERENCES `Users` (`id`);
