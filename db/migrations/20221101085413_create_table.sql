@@ -1,6 +1,7 @@
 -- migrate:up
 CREATE TABLE IF NOT EXISTS `Users` (
   `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  `login_id` varchar(50) NOT NULL UNIQUE,
   `kor_name` varchar(50) NOT NULL,
   `eng_name` varchar(50) NOT NULL,
   `profile_image` varchar(255) NOT NULL,

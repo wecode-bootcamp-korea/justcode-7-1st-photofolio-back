@@ -160,6 +160,7 @@ CREATE TABLE `User_Admin` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Users` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `login_id` varchar(50) NOT NULL,
   `kor_name` varchar(50) NOT NULL,
   `eng_name` varchar(50) NOT NULL,
   `profile_image` varchar(255) NOT NULL,
@@ -172,6 +173,7 @@ CREATE TABLE `Users` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `login_id` (`login_id`),
   UNIQUE KEY `default_email` (`default_email`),
   UNIQUE KEY `external_email` (`external_email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
