@@ -21,7 +21,6 @@ const validateToken = (req, res, next) => {
     const verifiedToken = jwt.verify(req.headers.token, process.env.SECRET_KEY);
     const user_id = verifiedToken.id;
     req.user_id = user_id;
-
     next();
   } catch (error) {
     // 인증 실패

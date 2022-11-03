@@ -74,6 +74,7 @@ const loginUser = async (req, res) => {
 };
 
 const getAccountInfo = async (req, res) => {
+  console.log('띠용');
   try {
     user_id = req.user_id;
     if (!user_id) {
