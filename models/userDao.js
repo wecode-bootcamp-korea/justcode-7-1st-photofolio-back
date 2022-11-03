@@ -5,28 +5,30 @@ const myDataSource = new DataSource({
   port: process.env.TYPEORM_PORT,
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE
+  database: process.env.TYPEORM_DATABASE,
 });
 const bcrypt = require('bcryptjs');
 
+myDataSource.initialize().then(() => {
+  console.log('Data Source has been initialized!');
+});
 
-myDataSource.initialize()
-  .then(() => {
-    console.log("Data Source has been initialized!")
-  });
-
-
-const getUserByEmail = async (email) => {
-
+const getUserByEmail = async email => {
   const user = await myDataSource.query(`
     SELECT id, email FROM user WHERE email= '${email}'
   `);
-  return user
-}
+  return user;
+};
 
 const createUserInDb = async (
-  login_id, password, kor_name, eng_name, country, email, profile_image
-  ) => {
+  login_id,
+  password,
+  kor_name,
+  eng_name,
+  country,
+  email,
+  profile_image
+) => {
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, (err, hash) => {
       myDataSource.query(`
@@ -40,16 +42,27 @@ const createUserInDb = async (
   });
 };
 
-const findDbUser = async (login_id) => {
+const findDbUser = async login_id => {
   const [dbUser] = await myDataSource.query(`
-  SELECT id, email, kor_name, password, profile_image
-    FROM user WHERE login_id = '${login_id}'
-    `)
-    return dbUser
-}
+  SELECT id, default_email, kor_name, password, profile_image
+    FROM USERS WHERE login_id = '${login_id}'
+    `);
+  return dbUser;
+};
 
-module.exports = { 
-  getUserByEmail, 
-  createUserInDb, 
-  findDbUser 
+const getAccountInfo = async user_id => {
+  const [userdata] = await myDataSource.query(`
+  SELECT * FROM USERS WHERE ID = '${user_id}';
+  `);
+  return userdata;
+};
+// const layerConnectionTest = async () => {
+//   console.log('I am in userDao');
+// };
+
+module.exports = {
+  getUserByEmail,
+  createUserInDb,
+  findDbUser,
+  getAccountInfo,
 };
