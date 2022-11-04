@@ -9,6 +9,6 @@ const workRouter = require('./workRouter');
 
 
 router.use('/user', userRouter);
-router.use('/work', workRouter);
+router.use('/upload', workRouter);
 
 module.exports = router;

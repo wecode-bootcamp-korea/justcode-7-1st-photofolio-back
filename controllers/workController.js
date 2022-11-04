@@ -7,12 +7,29 @@ const uploadImages = async (req, res) => {
   try {
     const image = req.files;
     const path = image.map(img => img.location);
-    await workService.uploadImages(image);
-    res.status(200).send(util.success(200, "요청성공",path));
+    const { title, content, tag, category_name, public_status } = req.body
+    const user_id = verifiedToken.id;
+
+    await workService.uploadImages(
+      title, content, tag, image, path, user_id, category_id, public_status, status_id, posting_id
+      );
+    res.status(200).send(util.success(200, "업로드 성공",path));
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: err.message });
   }
 }
 
-module.exports = { uploadImages };
+const uploadTest = async (req, res) => {
+  try {
+    const image = req.files;
+    const path1 = image.map(img => img.location);
+    await workService.uploadImages(path1);
+    res.status(200).send(util.success(200, "업로드 성공",path1));
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
+  }
+}
+
+module.exports = { uploadImages, uploadTest };
