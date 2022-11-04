@@ -101,6 +101,10 @@ const createUser = async (
     throw new Error('이메일 주소가 맞나요?');
   }
 
+  if (image === undefined) {
+    throw new Error ("이미지가 존재하지 않습니다")
+  }
+
   const user = await userDao.getUserByEmail(email);
 
   if (user.length !== 0) {
@@ -165,4 +169,15 @@ const getAccountInfo = async user_id => {
 //   console.log('I am in userService2');
 // };
 
-module.exports = { createUser, loginUser, getAccountInfo };
+// 회원가입시 데이터 넣는 함수(위의 회원가입에서도 연동 확인되면 삭제 예정)
+const uploadProfile = async (image) => {
+  if (image === undefined) {
+    throw new Error ("이미지가 존재하지 않습니다")
+  }
+  const profile = await userDao.uploadProfile(image)
+  return profile
+}
+
+
+
+module.exports = { createUser, loginUser, getAccountInfo, uploadProfile };

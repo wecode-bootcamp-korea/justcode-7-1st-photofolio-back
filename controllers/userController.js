@@ -12,9 +12,10 @@ const createUser = async (req, res) => {
       kor_name,
       eng_name,
       country,
-      email,
-      profile_image,
+      email
     } = req.body;
+
+    const profile_image = req.file.location;
 
     const REQUIRE_KEYS = [
       login_id,
@@ -30,6 +31,7 @@ const createUser = async (req, res) => {
         throw new Error(`KEY_ERROR: ${key}`);
       }
     });
+
 
     const result = await userService.createUser(
       login_id,
@@ -101,15 +103,18 @@ const getAccountInfo = async (req, res) => {
 //   console.log('I am in userController2');
 // };
 
-//프로필 사진 업로드
-const uploadProfile = async(req, res) => {
-    console.log(req.file)
-    const image = req.file.location;
-    if(image === undefined) {
-      return res.status(400).send(util.fail(400, "이미지가 존재하지 않습니다"))
-        }
-        res.status(200).send(util.success(200, "요청성공", image));
+// 회원가입시 데이터 넣는 함수(위의 회원가입에서도 연동 확인되면 삭제 예정)
+const uploadProfile = async (req, res) => {
+  try {
+  console.log(req.file)
+  const image = req.file.location;
+  const result = await userService.uploadProfile(image)
+  res.status(200).send(util.success(200, "요청성공", image));
+  }catch(err){
+    console.log(err)
+    res.status(400).json({ message: err.message })
   }
+}
 
 
 module.exports = { createUser, loginUser, getAccountInfo, uploadProfile };
