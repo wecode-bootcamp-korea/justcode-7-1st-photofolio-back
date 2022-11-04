@@ -3,12 +3,12 @@ const express = require('express');
 const router = express.Router();
 
 const userRouter = require('./userRouter');
-// const uploadRouter = require('./uploadRouter');
+const workRouter = require('./workRouter');
 
 
 
 
 router.use('/user', userRouter);
-// router.use('/upload', uploadRouter)
+router.use('/work', workRouter);
 
 module.exports = router;

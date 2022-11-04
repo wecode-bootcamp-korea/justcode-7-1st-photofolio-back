@@ -26,9 +26,12 @@
     "typeorm": "^0.3.10"
   },
   "dependencies": {
+    "aws-sdk": "^2.1247.0",
+    "bignumber.js": "^9.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
+    "multer-s3": "^2.10.0",
     "mysql2": "^2.3.3"
   },
   "repository": {
