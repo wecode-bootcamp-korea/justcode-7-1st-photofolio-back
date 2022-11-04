@@ -10,3 +10,5 @@ router.get('/list', workController.worksList);
 router.get('/feedId', workController.feed); // 토큰여부 필요함
 
 module.exports = router;
+
+module.exports = router;

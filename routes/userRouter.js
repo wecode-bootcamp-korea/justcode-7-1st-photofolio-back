@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const upload = multer({
-  dset: 'uploads/'
-})
+const upload = require('../middlewares/multer')
 
 const { validateToken } = require('../middlewares/validateToken');
 const userController = require('../controllers/userController');
@@ -17,6 +14,8 @@ router.post('/accountInfo', validateToken, userController.getAccountInfo);
 
 // router.get('/test', userController.layerConnectionTest);
 
+//프로필 사진 업로드
 router.post('/profile', upload.single('image'), userController.uploadProfile);
+
 
 module.exports = router;
