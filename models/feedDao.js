@@ -53,21 +53,21 @@ const feed = async feed_id => {
     let followInfo = await myDataSource.query(
       `
       SELECT
-        u.*,
+      u.*,
+      JSON_OBJECT(
+        "follower_cnt", COUNT(f.follower_id)
+      ) as follower_cnt,
+      JSON_ARRAYAGG(
         JSON_OBJECT(
-          "follower_cnt", COUNT(f.follower_id)
-        ) as follower_cnt,
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            "follower_id", f.follower_id,
-            "follwer_name", u2.nickname
-          )
-        ) as followerInfo    
+          "follower_id", f.follower_id,
+          "follwer_name", u2.nickname
+        )
+      ) as followerInfo    
       from Follow f
-      left join Users u on u.id = f.following_id
+      right join Users u on u.id = f.following_id
       left join Works_Posting wp on u.id = wp.user_id
       left join Users u2 on u2.id = f.follower_id
-      where wp.id = 10
+      where wp.id = 14
       `
     );
 
@@ -79,7 +79,33 @@ const feed = async feed_id => {
       };
     });
 
-    let result = { feedWithTags, followInfo };
+    // feed + 공감별 개수
+    let sympathySortCount = await myDataSource.query(
+      `
+      SELECT ws.sympathy_sort, COUNT(wsc.id) as sympathy_cnt
+      from Works_Sympathy_Count wsc 
+      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
+      left join Users u on u.id = wsc.user_id 
+      left join Works_Posting wp ON wsc.posting_id = wp.id 
+      where wp.id = 7
+      GROUP by ws.sympathy_sort 
+      `
+    );
+
+    // feed + 총 공감수
+    let sympathyCount = await myDataSource.query(
+      `
+      SELECT COUNT(*)
+      from Works_Sympathy_Count wsc 
+      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
+      left join Users u on u.id = wsc.user_id 
+      left join Works_Posting wp ON wsc.posting_id = wp.id 
+      where wp.id = 7
+      GROUP by wp.id
+      `
+    );
+
+    let result = { feedWithTags, followInfo, sympathyCount, sympathySortCount };
     return result;
   } catch (err) {
     console.log(err);
