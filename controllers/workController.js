@@ -1,15 +1,18 @@
 const { json } = require('express');
 const { util } = require('../middlewares/util');
+const workService = require('../services/workService');
 
 //게시글 사진 업로드
 const uploadImages = async (req, res) => {
-  console.log(req.files[0].location)
-  const image = req.files;
-  const path = image.map(img => img.location);
-  if (image === undefined) {
-    return res.status(400).send(util.fail(400, "이미지가 존재하지 않습니다"))
+  try {
+    const image = req.files;
+    const path = image.map(img => img.location);
+    await workService.uploadImages(image);
+    res.status(200).send(util.success(200, "요청성공",path));
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: err.message });
   }
-  res.status(200).send(util.success(200, "요청성공", path));
 }
 
-module.exports = {uploadImages} ;
+module.exports = { uploadImages };
