@@ -61,7 +61,6 @@ const loginUser = async (req, res) => {
       }
     });
     const result = await userService.loginUser(login_id, password);
-
     res.status(200).json({
       code: 200,
       message: '토큰이 발급되었습니다.',
