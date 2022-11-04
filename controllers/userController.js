@@ -66,6 +66,7 @@ const loginUser = async (req, res) => {
       code: 200,
       message: '토큰이 발급되었습니다.',
       token: token,
+      profile: 'profile'
     });
   } catch (err) {
     console.log(err);
