@@ -24,4 +24,4 @@ const feed = async (req, res) => {
 
 module.exports = { worksList, feed };
 
-module.exports = {uploadImages} ;
+module.exports = { uploadImages };

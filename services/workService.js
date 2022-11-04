@@ -23,3 +23,5 @@ const feed = async () => {
 };
 
 module.exports = { worksList, feed };
+
+module.exports = { uploadImages }
