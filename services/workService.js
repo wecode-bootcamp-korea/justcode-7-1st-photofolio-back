@@ -24,4 +24,6 @@ const feed = async () => {
 
 module.exports = { worksList, feed };
 
-module.exports = { uploadImages }
+
+
+module.exports = { uploadImages, uploadTest }

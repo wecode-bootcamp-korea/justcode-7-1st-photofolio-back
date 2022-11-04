@@ -12,5 +12,6 @@ router.use('/user', userRouter);
 router.use('/works', workRouter);
 router.use('/feeds', feedRouter);
 router.use('/category', categoryRouter);
+router.use('/upload', workRouter);
 
 module.exports = router;

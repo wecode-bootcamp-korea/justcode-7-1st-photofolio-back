@@ -5,6 +5,7 @@ const userService = require('../services/userService');
 
 const createUser = async (req, res) => {
   try {
+    const profile_image = req.file.location;
     const {
       login_id,
       password,
@@ -14,8 +15,6 @@ const createUser = async (req, res) => {
       nickname,
       email
     } = req.body;
-
-    const profile_image = req.file.location;
 
     const REQUIRE_KEYS = [
       login_id,
