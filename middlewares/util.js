@@ -4,7 +4,7 @@ const util = {
       status: status,
       success: true,
       message: message,
-      data:data
+      data: data
     }
   },
   fail: (status, message) => {
@@ -16,4 +16,4 @@ const util = {
   }
 }
 
-module.exports = {util};
+module.exports = { util };
