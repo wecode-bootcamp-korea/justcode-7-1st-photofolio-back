@@ -22,7 +22,7 @@ const tagCount = async (req, res) => {
   }
 };
 
-// 카테고리별 리스트
+// 카테고리별 피드 리스트
 const selectCategoryList = async (req, res) => {
   try {
     const result = await categoryService.selectCategoryList();

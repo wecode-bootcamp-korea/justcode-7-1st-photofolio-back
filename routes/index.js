@@ -10,11 +10,7 @@ const feedRouter = require('./feedRouter');
 router.use('/user', userRouter);
 
 router.use('/works', postRouter);
-router.use('/feeds', feedRouter);
-router.use('/category', categoryRouter);
-
-router.use('/works', postRouter);
-router.use('/feeds', feedRouter);
+router.use('/feed', feedRouter);
 router.use('/category', categoryRouter);
 
 module.exports = router;

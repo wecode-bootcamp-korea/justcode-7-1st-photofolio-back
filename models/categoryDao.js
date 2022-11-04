@@ -32,7 +32,7 @@ const categoryCount = async () => {
   }
 };
 
-// 카테고리별 리스트
+// 카테고리별 피드 리스트
 const selectCategoryList = async category_id => {
   try {
     let result = await myDataSource.query(

@@ -5,6 +5,6 @@ const router = express.Router();
 // const { validateToken } = require('../middlewares/validateToken');
 const feedController = require('../controllers/feedController');
 
-// router.post('/signup', userController.createUser);
+router.get('/feedId', feedController.feed); // 토큰여부 필요함
 
 module.exports = router;

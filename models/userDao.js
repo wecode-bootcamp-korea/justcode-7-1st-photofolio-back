@@ -25,16 +25,16 @@ const createUserInDb = async (
   password,
   kor_name,
   eng_name,
-  country,
+  nickname,
   email,
   profile_image
 ) => {
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, (err, hash) => {
       myDataSource.query(`
-    INSERT INTO Users (login_id, password, kor_name, eng_name, country, email, profile_image)
+    INSERT INTO Users (login_id, password, kor_name, eng_name, nickname, email, profile_image)
     VALUES (
-      '${login_id}', '${hash}', '${kor_name}', '${eng_name}', '${country}', '${email}'
+      '${login_id}', '${hash}', '${kor_name}', '${eng_name}', '${nickname}', '${email}'
       , '${profile_image}'
     )
   `);
@@ -44,7 +44,7 @@ const createUserInDb = async (
 
 const findDbUser = async login_id => {
   const [dbUser] = await myDataSource.query(`
-  SELECT id, default_email, kor_name, password, profile_image
+  SELECT id, email, kor_name, password, profile_image
     FROM USERS WHERE login_id = '${login_id}'
     `);
   return dbUser;
