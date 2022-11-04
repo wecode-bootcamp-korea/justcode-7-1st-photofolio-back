@@ -9,9 +9,7 @@ const myDataSource = new DataSource({
 });
 const bcrypt = require('bcryptjs');
 
-myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
-});
+myDataSource.initialize()
 
 const getUserByEmail = async email => {
   const user = await myDataSource.query(`
@@ -25,16 +23,16 @@ const createUserInDb = async (
   password,
   kor_name,
   eng_name,
-  country,
+  nickname,
   email,
   profile_image
 ) => {
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, (err, hash) => {
       myDataSource.query(`
-    INSERT INTO Users (login_id, password, kor_name, eng_name, country, email, profile_image)
+    INSERT INTO Users (login_id, password, kor_name, eng_name, nickname, email, profile_image)
     VALUES (
-      '${login_id}', '${hash}', '${kor_name}', '${eng_name}', '${country}', '${email}'
+      '${login_id}', '${hash}', '${kor_name}', '${eng_name}', '${nickname}', '${email}'
       , '${profile_image}'
     )
   `);

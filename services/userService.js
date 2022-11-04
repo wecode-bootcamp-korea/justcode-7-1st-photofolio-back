@@ -8,7 +8,7 @@ const createUser = async (
   password_check,
   kor_name,
   eng_name,
-  country,
+  nickname,
   email,
   profile_image
 ) => {
@@ -81,18 +81,6 @@ const createUser = async (
     throw new Error('영어만 가능해요.');
   }
 
-  if (
-    country.search(num) > 0 ||
-    country.search(korAll) > 0 ||
-    country.search(spe) > 0
-  ) {
-    throw new Error('한글로 써주세요.');
-  }
-
-  if (country.search(korWord) < 0 || country.search(korJaMo) > 0) {
-    throw new Error('자음, 모음은 안되요.');
-  }
-
   if (!reg_email.test(email)) {
     throw new Error('이메일 확인 부탁드립니다');
   }
@@ -116,7 +104,7 @@ const createUser = async (
     password,
     kor_name,
     eng_name,
-    country,
+    nickname,
     email,
     profile_image
   );
