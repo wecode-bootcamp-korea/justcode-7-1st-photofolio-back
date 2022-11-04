@@ -1,8 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer');;
-// const upload = require({ dest : 'uploads/' })
 const routes = require('./routes');
+const multer = require('multer');;
 const morgan = require('morgan');
 
 
@@ -17,8 +16,8 @@ const createApp = () => {
   app.use(cors(corsOptions));
 
   app.use(express.json());
-  app.use(multer);
   app.use(routes);
+  app.use(multer);
   app.use(morgan('combined'));
 
   app.use((err, req, res, next) => {

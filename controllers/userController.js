@@ -1,4 +1,5 @@
 const { json } = require('express');
+const { util } = require('prettier');
 const userService = require('../services/userService');
 
 const createUser = async (req, res) => {
@@ -98,5 +99,31 @@ const getAccountInfo = async (req, res) => {
 //   await userService.layerConnectionTest();
 //   console.log('I am in userController2');
 // };
+const util = {
+  success: (status, message, data) => {
+    return {
+      status: status,
+      success: true,
+      message: message,
+      data:data
+    }
+  },
+  fail: (status, message) => {
+    return {
+      status: status,
+      success: false,
+      message: message
+    }
+  }
+}
+const uploadProfile = async(req, res) => {
+    const image = req.file.path;
+    console.log(req.file);
+    if(image === undefined) {
+      return res.status(400).send(util.fail(400, "이미지가 존재하지 않습니다"))
+        }
+        res.status(200).send(util.success(200, "요청성공", image));
+  }
 
-module.exports = { createUser, loginUser, getAccountInfo };
+
+module.exports = { createUser, loginUser, getAccountInfo, uploadProfile };
