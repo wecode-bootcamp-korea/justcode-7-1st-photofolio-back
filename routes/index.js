@@ -8,7 +8,10 @@ const feedRouter = require('./feedRouter');
 // const otherRouter = require('./other');
 
 router.use('/user', userRouter);
-// router.use(otherRouter);
+
+router.use('/works', postRouter);
+router.use('/feeds', feedRouter);
+router.use('/category', categoryRouter);
 
 router.use('/works', postRouter);
 router.use('/feeds', feedRouter);

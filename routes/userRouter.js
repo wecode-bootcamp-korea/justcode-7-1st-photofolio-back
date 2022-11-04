@@ -8,5 +8,9 @@ const userController = require('../controllers/userController');
 router.post('/signup', userController.createUser);
 //로그인
 router.post('/login', userController.loginUser);
+//계정정보조회페이지
+router.post('/accountInfo', validateToken, userController.getAccountInfo);
+
+// router.get('/test', userController.layerConnectionTest);
 
 module.exports = router;

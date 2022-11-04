@@ -1,3 +1,4 @@
+const { json } = require('express');
 const userService = require('../services/userService');
 
 const createUser = async (req, res) => {
@@ -72,4 +73,29 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { createUser, loginUser };
+const getAccountInfo = async (req, res) => {
+  console.log('띠용');
+  try {
+    user_id = req.user_id;
+    if (!user_id) {
+      const error = new Error('No user_id in req');
+      error.statusCode = 404;
+      throw error;
+    }
+    const userdata = await userService.getAccountInfo(user_id);
+    res.status(200).json({ data: userdata });
+    console.log(`user_id ${user_id}'s information is being displayed`);
+    return userdata;
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+// const layerConnectionTest = async () => {
+//   console.log('I am in userController1');
+//   await userService.layerConnectionTest();
+//   console.log('I am in userController2');
+// };
+
+module.exports = { createUser, loginUser, getAccountInfo };

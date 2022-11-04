@@ -154,4 +154,15 @@ const loginUser = async (login_id, password) => {
   );
 };
 
-module.exports = { createUser, loginUser };
+const getAccountInfo = async user_id => {
+  const userdata = await userDao.getAccountInfo(user_id);
+  return userdata;
+};
+
+// const layerConnectionTest = async () => {
+//   console.log('I am in userService1');
+//   await userDao.layerConnectionTest();
+//   console.log('I am in userService2');
+// };
+
+module.exports = { createUser, loginUser, getAccountInfo };

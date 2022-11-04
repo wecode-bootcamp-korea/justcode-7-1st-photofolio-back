@@ -44,14 +44,25 @@ const createUserInDb = async (
 
 const findDbUser = async login_id => {
   const [dbUser] = await myDataSource.query(`
-  SELECT id, email, kor_name, password, profile_image
-    FROM Users WHERE login_id = '${login_id}'
+  SELECT id, default_email, kor_name, password, profile_image
+    FROM USERS WHERE login_id = '${login_id}'
     `);
   return dbUser;
 };
+
+const getAccountInfo = async user_id => {
+  const [userdata] = await myDataSource.query(`
+  SELECT * FROM USERS WHERE ID = '${user_id}';
+  `);
+  return userdata;
+};
+// const layerConnectionTest = async () => {
+//   console.log('I am in userDao');
+// };
 
 module.exports = {
   getUserByEmail,
   createUserInDb,
   findDbUser,
+  getAccountInfo,
 };
