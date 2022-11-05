@@ -15,10 +15,9 @@ const uploadImages = async (title, content, tag, image, user_id, category_name, 
   }
   const category_id = await workDao.category_name(category_name);
   const status_id = await workDao.publicStatus(statusName);
+  await workDao.uploadForm(title, content, user_id, category_id, status_id);
   const posting_id = await workDao.worksPosting(user_id, title);
-  await workDao.uploadImages(
-    title, content, tag, image, path, user_id, category_id, public_status, status_id, posting_id
-    );
+  await workDao.uploadImages(posting_id, path);
 }
 
 const uploadTest = async (image) => {
