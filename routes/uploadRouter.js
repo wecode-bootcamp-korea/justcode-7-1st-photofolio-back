@@ -3,12 +3,12 @@ const router = express.Router();
 const upload = require('../middlewares/multer')
 
 const { validateToken } = require('../middlewares/validateToken');
-const workController = require('../controllers/workController');
+const uploadController = require('../controllers/uploadController');
 
 //여러장 사진 업로드
-router.post('/form', validateToken, upload.array('file', 4), workController.uploadImages);
+router.post('/form', validateToken, upload.array('file', 4), uploadController.uploadImages);
 
-router.post('/test', upload.array('file', 4), workController.uploadTest);
+router.post('/test', upload.array('file', 4), uploadController.uploadTest);
 
 
 module.exports = router;
