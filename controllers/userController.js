@@ -5,7 +5,6 @@ const userService = require('../services/userService');
 
 const createUser = async (req, res) => {
   try {
-    const profile_image = req.file.location;
     const {
       login_id,
       password,
@@ -15,6 +14,7 @@ const createUser = async (req, res) => {
       nickname,
       email
     } = req.body;
+    const profile_image = req.file.location;
 
     const REQUIRE_KEYS = [
       login_id,
@@ -25,8 +25,8 @@ const createUser = async (req, res) => {
       email,
     ];
 
-    REQUIRE_KEYS.map(key => {
-      if (!key) {
+    Object.keys(REQUIRE_KEYS).map((key) => {
+      if (!REQUIRE_KEYS[key]) {
         throw new Error(`KEY_ERROR: ${key}`);
       }
     });
@@ -102,18 +102,7 @@ const getAccountInfo = async (req, res) => {
 //   console.log('I am in userController2');
 // };
 
-// 회원가입시 데이터 넣는 함수(위의 회원가입에서도 연동 확인되면 삭제 예정)
-const uploadProfile = async (req, res) => {
-  try {
-  console.log(req.file)
-  const image = req.file.location;
-  const result = await userService.uploadProfile(image)
-  res.status(200).send(util.success(200, "요청성공", image));
-  }catch(err){
-    console.log(err)
-    res.status(400).json({ message: err.message })
-  }
-}
 
 
-module.exports = { createUser, loginUser, getAccountInfo, uploadProfile };
+
+module.exports = { createUser, loginUser, getAccountInfo };
