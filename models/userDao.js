@@ -42,7 +42,7 @@ const createUserInDb = async (
 
 const findDbUser = async login_id => {
   const [dbUser] = await myDataSource.query(`
-  SELECT id, default_email, kor_name, password, profile_image
+  SELECT id, email, kor_name, password, profile_image
     FROM USERS WHERE login_id = '${login_id}'
     `);
   return dbUser;
