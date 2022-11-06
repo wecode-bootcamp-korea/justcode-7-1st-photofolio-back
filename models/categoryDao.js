@@ -12,9 +12,8 @@ myDataSource.initialize().then(() => {
   console.log('Data Source has been initialized!');
 });
 
-// 카테고리별 피드 리스트 현재 하드코딩 상태. 리팩토링 해야함!
-// 카테고리별 피드 리스트 /fashion
-const categoryList1 = async () => {
+// 카테고리별 피드 리스트 - 1.fashion 2.pattern 3.travel 4.animal
+const categoryList = async categoryName => {
   try {
     let result = await myDataSource.query(
       `
@@ -41,125 +40,8 @@ const categoryList1 = async () => {
       left JOIN tables2 b on b.id = wp.id 
       LEFT JOIN tables3 c on c.posting_id = wp.id
       
-      WHERE wp.category_id = 1
+      WHERE wc.eng_category_name = '${categoryName}'
       ORDER BY wp.created_at DESC   
-      `
-    );
-    return result;
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 카테고리별 피드 리스트 /pattern
-const categoryList2 = async () => {
-  try {
-    let result = await myDataSource.query(
-      `
-      with tables1 as (
-        select wp.id as id, COUNT(*) as comment_cnt FROM Works_Posting wp 
-        join Comment c on wp.id = c.posting_id 
-        GROUP BY wp.id 
-      ), tables2 as (
-        SELECT wp.id as id, COUNT(*) as sympathy_cnt from Works_Posting wp 
-        join Works_Sympathy_Count wsc on wp.id = wsc.posting_id 
-        left join Works_Sympathy ws on wsc.sympathy_id = ws.id 
-        GROUP BY wp.id 
-      ), tables3 as (
-        select id, posting_id, upload_url as img_url from upload_file
-        WHERE (posting_id, id) 
-        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
-      ) 
-        
-      SELECT wp.id, c.img_url, wc.category_name, wc.eng_category_name, u.nickname, wp.title, IFNULL(a.comment_cnt, '0') as comment_cnt, IFNULL(b.sympathy_cnt, '0') as sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10)
-      from Works_Posting wp 
-      join Users u on wp.user_id = u.id 
-      left join Works_Category wc ON wp.category_id = wc.id 
-      left join tables1 a on a.id = wp.id 
-      left JOIN tables2 b on b.id = wp.id 
-      LEFT JOIN tables3 c on c.posting_id = wp.id
-      
-      WHERE wp.category_id = 2
-      ORDER BY wp.created_at DESC 
-      `
-    );
-    return result;
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 카테고리별 피드 리스트 /travel
-const categoryList3 = async () => {
-  try {
-    let result = await myDataSource.query(
-      `
-      with tables1 as (
-        select wp.id as id, COUNT(*) as comment_cnt FROM Works_Posting wp 
-        join Comment c on wp.id = c.posting_id 
-        GROUP BY wp.id 
-      ), tables2 as (
-        SELECT wp.id as id, COUNT(*) as sympathy_cnt from Works_Posting wp 
-        join Works_Sympathy_Count wsc on wp.id = wsc.posting_id 
-        left join Works_Sympathy ws on wsc.sympathy_id = ws.id 
-        GROUP BY wp.id 
-      ), tables3 as (
-        select id, posting_id, upload_url as img_url from upload_file
-        WHERE (posting_id, id) 
-        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
-      ) 
-        
-      SELECT wp.id, c.img_url, wc.category_name, wc.eng_category_name, u.nickname, wp.title, IFNULL(a.comment_cnt, '0') as comment_cnt, IFNULL(b.sympathy_cnt, '0') as sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10)
-      from Works_Posting wp 
-      join Users u on wp.user_id = u.id 
-      left join Works_Category wc ON wp.category_id = wc.id 
-      left join tables1 a on a.id = wp.id 
-      left JOIN tables2 b on b.id = wp.id 
-      LEFT JOIN tables3 c on c.posting_id = wp.id
-      
-      WHERE wp.category_id = 3
-      ORDER BY wp.created_at DESC 
-      `
-    );
-    return result;
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 카테고리별 피드 리스트 /animal
-const categoryList4 = async () => {
-  try {
-    let result = await myDataSource.query(
-      `
-      with tables1 as (
-        select wp.id as id, COUNT(*) as comment_cnt FROM Works_Posting wp 
-        join Comment c on wp.id = c.posting_id 
-        GROUP BY wp.id 
-      ), tables2 as (
-        SELECT wp.id as id, COUNT(*) as sympathy_cnt from Works_Posting wp 
-        join Works_Sympathy_Count wsc on wp.id = wsc.posting_id 
-        left join Works_Sympathy ws on wsc.sympathy_id = ws.id 
-        GROUP BY wp.id 
-      ), tables3 as (
-        select id, posting_id, upload_url as img_url from upload_file
-        WHERE (posting_id, id) 
-        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
-      ) 
-        
-      SELECT wp.id, c.img_url, wc.category_name, wc.eng_category_name, u.nickname, wp.title, IFNULL(a.comment_cnt, '0') as comment_cnt, IFNULL(b.sympathy_cnt, '0') as sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10)
-      from Works_Posting wp 
-      join Users u on wp.user_id = u.id 
-      left join Works_Category wc ON wp.category_id = wc.id 
-      left join tables1 a on a.id = wp.id 
-      left JOIN tables2 b on b.id = wp.id 
-      LEFT JOIN tables3 c on c.posting_id = wp.id
-      
-      WHERE wp.category_id = 4
-      ORDER BY wp.created_at DESC 
       `
     );
     return result;
@@ -190,8 +72,5 @@ const tagCount = async () => {
 
 module.exports = {
   tagCount,
-  categoryList1,
-  categoryList2,
-  categoryList3,
-  categoryList4,
+  categoryList,
 };

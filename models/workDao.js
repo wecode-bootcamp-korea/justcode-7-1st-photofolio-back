@@ -60,7 +60,7 @@ const worksList = async () => {
 };
 
 // feed 상세
-const feed = async feed_id => {
+const feed = async id => {
   try {
     // feed 정보와 사용자 정보 + 태그 카운트 + 태그 배열
     let feedWithTags = await myDataSource.query(
@@ -83,7 +83,7 @@ const feed = async feed_id => {
       join Works_Category wc on wc.id = wp.category_id
       left join Works_Posting_tags wpt  ON wp.id = wpt.posting_id
       left join Works_tag_names wtn on wpt.tag_id = wtn.id
-      where wp.id = 7
+      where wp.id = '${id}'
     `
     );
 
@@ -104,9 +104,8 @@ const feed = async feed_id => {
         IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
       ), tables2 as (
         SELECT * from Works_Posting wp 
-        WHERE wp.id = 14
+        WHERE wp.id = '${id}'
       )
-      
       SELECT 
           JSON_OBJECT(
           "user_feed_cnt", COUNT(wp.id)
@@ -149,7 +148,7 @@ const feed = async feed_id => {
       right join Users u on u.id = wp.user_id
   	  RIGHT join Follow f on f.following_id = u.id  
       left join Users u2 on u2.id = f.follower_id
-      where wp.id = 14
+      where wp.id = '${id}'
       `
     );
 
@@ -169,7 +168,7 @@ const feed = async feed_id => {
       left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
       left join Users u on u.id = wsc.user_id 
       left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = 7
+      where wp.id = '${id}'
       GROUP by ws.sympathy_sort 
       `
     );
@@ -182,7 +181,7 @@ const feed = async feed_id => {
       left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
       left join Users u on u.id = wsc.user_id 
       left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = 7
+      where wp.id = '${id}'
       GROUP by wp.id
       `
     );

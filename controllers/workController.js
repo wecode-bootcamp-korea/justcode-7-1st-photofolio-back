@@ -14,7 +14,8 @@ const worksList = async (req, res) => {
 // 지정된 피드 상세
 const feed = async (req, res) => {
   try {
-    const result = await workService.feed();
+    const { id } = req.params;
+    const result = await workService.feed(id);
     res.status(200).json(result);
   } catch (err) {
     console.log(err);
