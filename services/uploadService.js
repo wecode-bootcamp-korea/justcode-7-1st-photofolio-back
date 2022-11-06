@@ -1,7 +1,7 @@
 const uploadDao = require('../models/uploadDao');
 
 
-const uploadImages = async (title, content, tag, image, category_name, user_id, public_status) => {
+const uploadImages = async (title, content, arrayTag, image, category_name, user_id, public_status) => {
   console.log('서비스1')
   const path = image.map(img => img.location);
   if (image === undefined) {
@@ -12,7 +12,7 @@ const uploadImages = async (title, content, tag, image, category_name, user_id, 
     throw new Error("제목을 입력해주세요")
   }
 
-  if (tag.length > 10) {
+  if (arrayTag.length > 10) {
     throw new Error("태그는 10개까지만 할 수 있어요.")
   }
   const category_id = await uploadDao.worksCategory(category_name);
@@ -21,7 +21,6 @@ const uploadImages = async (title, content, tag, image, category_name, user_id, 
   console.log('서비스3')
   const tilteName = await uploadDao.findTilte(title, user_id);
   console.log('서비스4')
-  console.log(tilteName)
   if (tilteName.length !==0 ) {
     throw new Error('같은 제목이 이미 존재합니다.');
   }
@@ -31,6 +30,12 @@ const uploadImages = async (title, content, tag, image, category_name, user_id, 
   console.log('서비스6')
   await uploadDao.uploadImages(posting_id, path);
   console.log('서비스7')
+  await uploadDao.worksTagNames(arrayTag);
+  console.log('서비스8')
+  await uploadDao.deleteOverlapTag();
+  console.log('서비스9')
+  await uploadDao.findTagId(arrayTag);
+  console.log('서비스10')
 }
 
 const uploadTest = async (image) => {

@@ -42,7 +42,6 @@ const uploadForm = async (title, content, user_id, category_id, status_id) => {
   INSERT INTO Works_Posting (user_id, category_id, title, content, status_id)
   VALUES ('${user_id}', '${category_id}', '${title}', '${content}', '${status_id}')
   `)
-  console.log(posting)
   return posting
 }
 
@@ -51,13 +50,13 @@ const worksPosting = async (user_id, title) => {
   const postingId = await myDataSource.query(`
     SELECT id FROM Works_Posting WHERE user_id = '${user_id}' AND title='${title}'
   `)
-  console.log(postingId)
   const posting_id = postingId[0].id
   return posting_id
 }
 
 const uploadImages = async (posting_id, path) => {
   console.log('다오6')
+  console.log(path)
   for (let i = 0; i < path.length; i++) {
     await myDataSource.query(`
   INSERT INTO upload_file (posting_id, file_sort_id, upload_url)
@@ -66,8 +65,40 @@ const uploadImages = async (posting_id, path) => {
   }
 }
 
+const worksTagNames = async (arrayTag) => {
+  console.log('다오7')
+  console.log(arrayTag)
+  for (let i = 0; i < arrayTag.length; i++) {
+  await myDataSource.query(`
+  INSERT INTO Works_tag_names (name)
+  VALUES ('${arrayTag[i]}')
+  `)
+  } 
+}
+
+const deleteOverlapTag = async () => {
+  console.log('다오8')
+  const noOverlapTag = await myDataSource.query(`
+    DELETE a FROM works_tag_names a , works_tag_names b WHERE a.id > b.id AND a.name = b.name;
+  `)
+  return noOverlapTag
+}
+
+const findTagId = async (arrayTag) => {
+  console.log('다오9')
+  const tagId = []
+  for (let i = 0; i < arrayTag.length; i++) {
+    tagId.push(await myDataSource.query(`
+    SELECT id FROM Works_tag_names WHERE name = '${arrayTag[i]}'
+    `)
+    )
+  }
+  console.log(tagId.id)
+}
 
 
 
 
-module.exports = { worksCategory, publicStatus, findTilte, uploadForm, worksPosting, uploadImages }
+module.exports = { 
+  worksCategory, publicStatus, findTilte, uploadForm, worksPosting, worksTagNames, deleteOverlapTag, uploadImages, findTagId
+}
