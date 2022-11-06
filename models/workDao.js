@@ -62,21 +62,45 @@ const worksList = async () => {
 // feed 상세
 const feed = async id => {
   try {
+    // feed img_url 배열(다수의 이미지가 있을 시)
+    let feedImgArr = await myDataSource.query(
+      `
+      SELECT 
+        COUNT(uf.upload_url) file_cnt, 
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            "file_sort", fs.file_sort, 
+            "img_url", uf.upload_url
+          )
+        ) as fileInfo
+      from upload_file uf  
+      left join file_sort fs on uf.file_sort_id = fs.id 
+      where uf.posting_id = '${id}' and uf.file_sort_id = 1
+      `
+    );
+    feedImgArr = [...feedImgArr].map(item => {
+      return {
+        ...item,
+        fileInfo: JSON.parse(item.fileInfo),
+      };
+    });
+
     // feed 정보와 사용자 정보 + 태그 카운트 + 태그 배열
     let feedWithTags = await myDataSource.query(
       `
       SELECT
-      	wp.*, ps.status, 
+      	wp.id, wp.user_id, wp.title, wp.content, wp.view_count,  
+	      ps.status, 
         JSON_OBJECT(
           "user_nickname", u.nickname,
           "user_profile_image", u.profile_image
         ) as userInfo,
 	      COUNT(wpt.id) as tag_cnt,
-        JSON_ARRAYAGG(
+	      JSON_ARRAYAGG(
           JSON_OBJECT(
-                "tag_name", wtn.name
+            "tag_name", wtn.name
           )
-        ) as tagInfo
+	      ) as tagInfo
       from Works_Posting wp
       join Users u on wp.user_id = u.id
       join public_status ps on wp.status_id = ps.id
@@ -84,12 +108,13 @@ const feed = async id => {
       left join Works_Posting_tags wpt  ON wp.id = wpt.posting_id
       left join Works_tag_names wtn on wpt.tag_id = wtn.id
       where wp.id = '${id}'
-    `
+      `
     );
 
     feedWithTags = [...feedWithTags].map(item => {
       return {
         ...item,
+        // img_url: JSON.parse(item.img_url),
         userInfo: JSON.parse(item.userInfo),
         tagInfo: JSON.parse(item.tagInfo),
       };
@@ -187,6 +212,7 @@ const feed = async id => {
     );
 
     let result = {
+      feedImgArr,
       feedWithTags,
       moreFeedinfo,
       followInfo,
