@@ -10,12 +10,13 @@ const worksList = async (req, res) => {
     const image = req.files;
     const path = image.map(img => img.location);
     const { title, content, tag, category_name, public_status } = req.body
+    const arrayTag = tag.split(',')
     const verifiedToken = jwt.verify(req.headers.token, process.env.SECRET_KEY);
     const user_id = verifiedToken.id;
     req.user_id = user_id;
 
     await uploadService.uploadImages(
-      title, content, tag, image, category_name, user_id, public_status
+      title, content, arrayTag, image, category_name, user_id, public_status
       );
     console.log('컨트롤러2')
     res.status(200).send(util.success(200, "업로드 성공",path));
