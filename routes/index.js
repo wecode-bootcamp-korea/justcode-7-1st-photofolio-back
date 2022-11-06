@@ -5,11 +5,10 @@ const userRouter = require('./userRouter');
 const postRouter = require('./workRouter');
 const categoryRouter = require('./categoryRouter');
 const feedRouter = require('./feedRouter');
-// const otherRouter = require('./other');
+const workRouter = require('./workRouter');
 
 router.use('/user', userRouter);
-
-router.use('/works', postRouter);
+router.use('/works', workRouter);
 router.use('/feed', feedRouter);
 router.use('/category', categoryRouter);
 

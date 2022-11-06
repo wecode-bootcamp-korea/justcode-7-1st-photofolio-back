@@ -49,11 +49,47 @@ const feed = async feed_id => {
       };
     });
 
+    // feed 글쓴이의 다른 작품들
+    let moreFeedinfo = await myDataSource.query(
+      `
+      with tables1 as (
+        select id, posting_id, upload_url as img_url from upload_file
+        WHERE (posting_id, id) 
+        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
+      ), tables2 as (
+        SELECT * from Works_Posting wp 
+        WHERE wp.id = 14
+      )
+      
+      SELECT 
+          JSON_OBJECT(
+          "user_feed_cnt", COUNT(wp.id)
+        ) as user_feed_cnt,
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+                "id", wp.id,
+                "title", wp.title,
+                "img_url", a.img_url
+              )
+        ) as more_feed
+      from Works_Posting wp   
+      left JOIN tables1 a on a.id = wp.id 
+      left join tables2 b on b.user_id = wp.user_id 
+      WHERE wp.user_id = b.user_id
+      `
+    );
+    moreFeedinfo = [...moreFeedinfo].map(item => {
+      return {
+        user_feed_cnt: JSON.parse(item.user_feed_cnt),
+        more_feed: JSON.parse(item.more_feed),
+      };
+    });
+
     // feed 글쓴이에 대한 팔로워 정보
     let followInfo = await myDataSource.query(
       `
       SELECT
-      u.*,
+      u.id, u.login_id, u.kor_name, u.eng_name, u.profile_image, u.nickname,  
       JSON_OBJECT(
         "follower_cnt", COUNT(f.follower_id)
       ) as follower_cnt,
@@ -62,10 +98,10 @@ const feed = async feed_id => {
           "follower_id", f.follower_id,
           "follwer_name", u2.nickname
         )
-      ) as followerInfo    
-      from Follow f
-      right join Users u on u.id = f.following_id
-      left join Works_Posting wp on u.id = wp.user_id
+      ) as followerInfo
+      from Works_Posting wp
+      right join Users u on u.id = wp.user_id
+  	  RIGHT join Follow f on f.following_id = u.id  
       left join Users u2 on u2.id = f.follower_id
       where wp.id = 14
       `
@@ -105,7 +141,13 @@ const feed = async feed_id => {
       `
     );
 
-    let result = { feedWithTags, followInfo, sympathyCount, sympathySortCount };
+    let result = {
+      feedWithTags,
+      moreFeedinfo,
+      followInfo,
+      sympathyCount,
+      sympathySortCount,
+    };
     return result;
   } catch (err) {
     console.log(err);

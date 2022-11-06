@@ -3,8 +3,9 @@ const router = express.Router();
 
 // 토큰이 필요할시,
 // const { validateToken } = require('../middlewares/validateToken');
-const postController = require('../controllers/workController');
+const workController = require('../controllers/workController');
 
-// router.post('/signup', userController.createUser);
+// 카테고리별 총 게시물 수 + 최신 feed list
+router.get('/list', workController.worksList);
 
 module.exports = router;
