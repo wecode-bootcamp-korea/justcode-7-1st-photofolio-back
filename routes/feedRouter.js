@@ -1,3 +1,4 @@
+const { application } = require('express');
 const express = require('express');
 const router = express.Router();
 
@@ -5,6 +6,7 @@ const router = express.Router();
 // const { validateToken } = require('../middlewares/validateToken');
 const feedController = require('../controllers/feedController');
 
-router.get('/feedId', feedController.feed); // 토큰여부 필요함
+// 최신 feed list
+router.get('/list', feedController.feedsList);
 
 module.exports = router;

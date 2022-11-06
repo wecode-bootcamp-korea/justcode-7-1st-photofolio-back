@@ -7,5 +7,6 @@ const workController = require('../controllers/workController');
 
 // 카테고리별 총 게시물 수 + 최신 feed list
 router.get('/list', workController.worksList);
+router.get('/feedId', workController.feed); // 토큰여부 필요함
 
 module.exports = router;

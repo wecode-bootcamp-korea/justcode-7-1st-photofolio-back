@@ -11,4 +11,15 @@ const worksList = async () => {
   }
 };
 
-module.exports = { worksList };
+// 지정된 피드 상세
+const feed = async () => {
+  try {
+    const result = await workDao.feed();
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
+};
+
+module.exports = { worksList, feed };

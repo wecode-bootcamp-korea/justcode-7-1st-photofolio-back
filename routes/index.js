@@ -9,7 +9,7 @@ const workRouter = require('./workRouter');
 
 router.use('/user', userRouter);
 router.use('/works', workRouter);
-router.use('/feed', feedRouter);
+router.use('/feeds', feedRouter);
 router.use('/category', categoryRouter);
 
 module.exports = router;

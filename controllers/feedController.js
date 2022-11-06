@@ -1,9 +1,9 @@
 const feedService = require('../services/feedService');
 
-// 지정된 피드 상세
-const feed = async (req, res) => {
+// 최신 feed list
+const feedsList = async (req, res) => {
   try {
-    const result = await feedService.feed();
+    const result = await feedService.feedsList();
     res.status(200).json(result);
   } catch (err) {
     console.log(err);
@@ -11,4 +11,4 @@ const feed = async (req, res) => {
   }
 };
 
-module.exports = { feed };
+module.exports = { feedsList };
