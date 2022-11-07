@@ -1,6 +1,5 @@
 const { json } = require('express');
 const userService = require('../services/userService');
-const { util } = require('../middlewares/util');
 
 const createUser = async (req, res) => {
   try {
@@ -12,7 +11,7 @@ const createUser = async (req, res) => {
       eng_name,
       nickname,
       email
-    } = req.body;
+      } = req.body;
     const profile_image = req.file.location;
 
     const REQUIRE_KEYS = [
