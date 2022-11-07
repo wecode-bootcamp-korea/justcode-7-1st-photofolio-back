@@ -242,6 +242,10 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,visualstudiocode,node
 /db*
+<<<<<<< HEAD
 
 .env
 /db
+=======
+*.sql
+>>>>>>> 4c6ddd3 (merge하기 전 기록용commit)

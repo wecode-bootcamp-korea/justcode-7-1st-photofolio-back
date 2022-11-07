@@ -127,12 +127,12 @@ const loginUser = async (login_id, password) => {
     error.statusCode = 404;
     throw error;
   }
-  const pwSame = bcrypt.compareSync(password, dbUser.password);
-  if (!pwSame) {
-    const error = new Error('비밀번호가 다릅니다.');
-    error.statusCode = 400;
-    throw error;
-  }
+  // const pwSame = bcrypt.compareSync(password, dbUser.password);
+  // if (!pwSame) {
+  //   const error = new Error('비밀번호가 다릅니다.');
+  //   error.statusCode = 400;
+  //   throw error;
+  // }
   //받은 요청의 id와 password로 DB에서 프로필사진, 닉네임 등 로그인 정보를 가져온다.
   const name = dbUser.kor_name;
   const profile = dbUser.profile_image;
@@ -159,10 +159,59 @@ const getAccountInfo = async user_id => {
   return userdata;
 };
 
-// const layerConnectionTest = async () => {
-//   console.log('I am in userService1');
-//   await userDao.layerConnectionTest();
-//   console.log('I am in userService2');
-// };
+const modifyAccountInfo = async (
+  user_id,
+  kor_name,
+  eng_name,
+  email,
+  nickname
+) => {
+  const userdata = await userDao.modifyAccountInfo(
+    user_id,
+    kor_name,
+    eng_name,
+    email,
+    nickname
+  );
+  return userdata;
+};
 
-module.exports = { createUser, loginUser, getAccountInfo };
+const deleteAccount = async user_id => {
+  await userDao.deleteAccount(user_id);
+};
+
+const getComment = async posting_id => {
+  const commentDisplayed = await userDao.getComment(posting_id);
+  return commentDisplayed;
+};
+
+const postComment = async (comment, posting_id, user_id) => {
+  const postedComment = await userDao.postComment(comment, posting_id, user_id);
+  return postedComment;
+};
+
+const modifiyComment = async (posting_id, comment, user_id, comment_id) => {
+  const modifedComment = await userDao.modifiyComment(
+    posting_id,
+    comment,
+    user_id,
+    comment_id
+  );
+  return modifedComment;
+};
+
+const deleteComment = async (user_id, comment_id) => {
+  await userDao.deleteComment(user_id, comment_id);
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  getAccountInfo,
+  deleteAccount,
+  modifyAccountInfo,
+  getComment,
+  postComment,
+  modifiyComment,
+  deleteComment,
+};

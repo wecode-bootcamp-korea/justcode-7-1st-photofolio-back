@@ -10,6 +10,20 @@ router.post('/signup', userController.createUser);
 router.post('/login', userController.loginUser);
 //계정정보조회페이지
 router.post('/accountInfo', validateToken, userController.getAccountInfo);
+//계정정보수정
+router.patch('/accountInfo', validateToken, userController.modifyAccountInfo);
+
+//계정삭제
+router.delete('/accountInfo', validateToken, userController.deleteAccount);
+
+//댓글조회
+router.get('/comment', userController.getComment);
+//댓글작성
+router.post('/comment', validateToken, userController.postComment);
+//댓글수정
+router.patch('/comment', validateToken, userController.modifiyComment);
+//댓글삭제
+router.delete('/comment', validateToken, userController.deleteComment);
 
 // router.get('/test', userController.layerConnectionTest);
 
