@@ -60,41 +60,72 @@ const worksList = async () => {
 };
 
 // feed 상세
-const feed = async feed_id => {
-  console.log('여기까지오나요');
+const feed = async (id, user_id) => {
   try {
-    // feed 정보와 사용자 정보 + 태그 카운트 + 태그 배열
+    // feed img_url 배열(다수의 이미지가 있을 시)
+    let feedImgArr = await myDataSource.query(
+      `
+      SELECT 
+        COUNT(uf.upload_url) file_cnt, 
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            "file_sort", fs.file_sort, 
+            "img_url", uf.upload_url
+          )
+        ) as fileInfo
+      from upload_file uf  
+      left join file_sort fs on uf.file_sort_id = fs.id 
+      where uf.posting_id = '${id}' and uf.file_sort_id = 1
+      `
+    );
+    feedImgArr = [...feedImgArr].map(item => {
+      return {
+        ...item,
+        fileInfo: JSON.parse(item.fileInfo),
+      };
+    });
+
+    // feed 정보와 사용자 정보 + 태그 카운트
     let feedWithTags = await myDataSource.query(
       `
       SELECT
-      	wp.*, ps.status, 
-        JSON_OBJECT(
-          "user_nickname", u.nickname,
-          "user_profile_image", u.profile_image
-        ) as userInfo,
+      	wp.id, wp.user_id, wp.title, wp.content, wp.view_count, 
+	      ps.status, SUBSTRING(wp.created_at,1,10) as created_at,
+        u.nickname, u.profile_image,
 	      COUNT(wpt.id) as tag_cnt,
-        JSON_ARRAYAGG(
+	      JSON_ARRAYAGG(
           JSON_OBJECT(
-                "tag_name", wtn.name
+            "tag_name", wtn.name
           )
-        ) as tagInfo
+	      ) as tagInfo
       from Works_Posting wp
       join Users u on wp.user_id = u.id
       join public_status ps on wp.status_id = ps.id
       join Works_Category wc on wc.id = wp.category_id
       left join Works_Posting_tags wpt  ON wp.id = wpt.posting_id
       left join Works_tag_names wtn on wpt.tag_id = wtn.id
-      where wp.id = 1
+      where wp.id = 7
     `
     );
     console.log(feedWithTags);
     feedWithTags = [...feedWithTags].map(item => {
       return {
         ...item,
-        userInfo: JSON.parse(item.userInfo),
         tagInfo: JSON.parse(item.tagInfo),
       };
     });
+
+    let feedCommentInfo = await myDataSource.query(
+      `
+      SELECT c.id, c.user_id, c.comment, 
+        SUBSTRING(c.created_at,1,10) as created_at , 
+        SUBSTRING(c.updated_at,1,10) as updated_at  
+      from Comment c 
+      left join Works_Posting wp on c.posting_id = wp.id 
+      where wp.id = '${id}'
+      order by created_at ASC 
+      `
+    );
 
     // feed 글쓴이의 다른 작품들
     let moreFeedinfo = await myDataSource.query(
@@ -105,9 +136,8 @@ const feed = async feed_id => {
         IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
       ), tables2 as (
         SELECT * from Works_Posting wp 
-        WHERE wp.id = 14
+        WHERE wp.id = '${id}'
       )
-      
       SELECT 
           JSON_OBJECT(
           "user_feed_cnt", COUNT(wp.id)
@@ -132,6 +162,21 @@ const feed = async feed_id => {
         more_feed: JSON.parse(item.more_feed),
       };
     });
+    // feed 글쓴이와 유저와의 팔로우 관계
+    const checkFollow = await myDataSource.query(
+      `
+      select EXISTS (select f.id from Follow f
+        left join Works_Posting wp on wp.user_id = f.following_id
+        where wp.id = '${id}' and follower_id = '${user_id}') as success
+      `
+    );
+
+    // const followerCnt = await myDataSource.query(
+    //   `
+    //   SELECT count(*) from Follow f
+    //   WHERE f.following_id = '${followeeId}'
+    //   `
+    // );
 
     // feed 글쓴이에 대한 팔로워 정보
     let followInfo = await myDataSource.query(
@@ -151,7 +196,7 @@ const feed = async feed_id => {
       right join Users u on u.id = wp.user_id
   	  RIGHT join Follow f on f.following_id = u.id  
       left join Users u2 on u2.id = f.follower_id
-      where wp.id = 14
+      where wp.id = '${id}'
       `
     );
 
@@ -163,6 +208,18 @@ const feed = async feed_id => {
       };
     });
 
+    // feed + 총 공감수
+    let sympathyCount = await myDataSource.query(
+      `
+      SELECT COUNT(*) as total_sympathy_cnt
+      from Works_Sympathy_Count wsc 
+      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
+      left join Users u on u.id = wsc.user_id 
+      left join Works_Posting wp ON wsc.posting_id = wp.id 
+      where wp.id = '${id}'
+      `
+    );
+
     // feed + 공감별 개수
     let sympathySortCount = await myDataSource.query(
       `
@@ -171,27 +228,17 @@ const feed = async feed_id => {
       left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
       left join Users u on u.id = wsc.user_id 
       left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = 7
+      where wp.id = '${id}'
       GROUP by ws.sympathy_sort 
       `
     );
 
-    // feed + 총 공감수
-    let sympathyCount = await myDataSource.query(
-      `
-      SELECT COUNT(*)
-      from Works_Sympathy_Count wsc 
-      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
-      left join Users u on u.id = wsc.user_id 
-      left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = 7
-      GROUP by wp.id
-      `
-    );
-
     let result = {
+      feedImgArr,
       feedWithTags,
+      feedCommentInfo,
       moreFeedinfo,
+      checkFollow,
       followInfo,
       sympathyCount,
       sympathySortCount,
@@ -201,6 +248,35 @@ const feed = async feed_id => {
     console.log(err);
     res.status(err.statusCode).json({ message: err.message });
   }
+};
+
+// ----------------------------
+// follow 여부 관련
+const isfollow = async (followeeId, user_id) => {
+  const checkFollow = await myDataSource.query(
+    `
+    select EXISTS (select id from Follow f  where '${followeeId}' and '${user_id}') as success
+    `
+  );
+
+  const followerCnt = await myDataSource.query(
+    `
+    SELECT count(*) from Follow f 
+    WHERE f.following_id = '${followeeId}'
+    `
+  );
+
+  let result = { checkFollow, followerCnt };
+  return result;
+};
+
+// follow 체결 관련
+const follow = async (followeeId, user_id) => {
+  const checkFollow = await myDataSource.query(
+    `
+    INSERT into Follow (following_id, follower_id) values ('${followeeId}, '${user_id}) 
+    `
+  );
 };
 
 module.exports = { worksList, feed };
