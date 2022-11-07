@@ -9,7 +9,7 @@ const createUser = async (req, res) => {
       password_check,
       kor_name,
       eng_name,
-      country,
+      nickname,
       email,
       profile_image,
     } = req.body;
@@ -35,7 +35,7 @@ const createUser = async (req, res) => {
       password_check,
       kor_name,
       eng_name,
-      country,
+      nickname,
       email,
       profile_image
     );
