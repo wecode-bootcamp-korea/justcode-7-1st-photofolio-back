@@ -81,6 +81,18 @@ const createUser = async (
     throw new Error('영어만 가능해요.');
   }
 
+  if (
+    nickname.search(num) > 0 ||
+    nickname.search(korAll) > 0 ||
+    nickname.search(spe) > 0
+  ) {
+    throw new Error('한글로 써주세요.');
+  }
+
+  if (nickname.search(korWord) < 0 || nickname.search(korJaMo) > 0) {
+    throw new Error('자음, 모음은 안되요.');
+  }
+
   if (!reg_email.test(email)) {
     throw new Error('이메일 확인 부탁드립니다');
   }
