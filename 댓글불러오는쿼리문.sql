@@ -1,0 +1,2 @@
+SELECT comment.id as comment_id, user_id, posting_id, comment, DATE_FORMAT(comment.created_at, '%Y년%m월%d일') as created_at, DATE_FORMAT(comment.updated_at,'%Y년%m월%d일') as updated_at, nickname FROM COMMENT 
+LEFT JOIN USERS ON users.id = comment.user_id where posting_id = 1; 
