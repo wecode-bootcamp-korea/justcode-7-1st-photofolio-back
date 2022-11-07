@@ -270,39 +270,12 @@ const isfollow = async (followeeId, user_id) => {
 };
 
 // follow 체결 관련
-const following = async (following_id, user_id) => {
-  const follow = await myDataSource.query(
+const follow = async (followeeId, user_id) => {
+  const checkFollow = await myDataSource.query(
     `
-    INSERT into Follow (following_id, follower_id) 
-    values ('${following_id}', '${user_id}') 
-    `
-  );
-  const followingResult = await myDataSource.query(
-    `
-    SELECT * from Follow f 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
+    INSERT into Follow (following_id, follower_id) values ('${followeeId}, '${user_id}) 
     `
   );
-  let result = { followingResult };
-  return result;
 };
 
-// follow 취소 관련
-const followingCancel = async (following_id, user_id) => {
-  const deleteFollow = await myDataSource.query(
-    `
-    DELETE from Follow 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  const deleteResult = await myDataSource.query(
-    `
-    SELECT count(*) from Follow f 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  let result = { deleteResult };
-  return result;
-};
-
-module.exports = { worksList, feed, following, followingCancel };
+module.exports = { worksList, feed };

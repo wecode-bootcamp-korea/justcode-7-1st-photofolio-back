@@ -11,8 +11,8 @@ const createUser = async (req, res) => {
       eng_name,
       nickname,
       email,
-      profile_image,
     } = req.body;
+    const profile_image = req.file.location;
 
     const REQUIRE_KEYS = [
       login_id,
@@ -23,8 +23,8 @@ const createUser = async (req, res) => {
       email,
     ];
 
-    REQUIRE_KEYS.map(key => {
-      if (!key) {
+    Object.keys(REQUIRE_KEYS).map(key => {
+      if (!REQUIRE_KEYS[key]) {
         throw new Error(`KEY_ERROR: ${key}`);
       }
     });
@@ -66,6 +66,7 @@ const loginUser = async (req, res) => {
       code: 200,
       message: '토큰이 발급되었습니다.',
       token: token,
+      profile: 'profile',
     });
   } catch (err) {
     console.log(err);

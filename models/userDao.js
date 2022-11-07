@@ -9,9 +9,7 @@ const myDataSource = new DataSource({
 });
 const bcrypt = require('bcryptjs');
 
-myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
-});
+myDataSource.initialize()
 
 const getUserByEmail = async email => {
   const user = await myDataSource.query(`
@@ -60,9 +58,19 @@ const getAccountInfo = async user_id => {
 //   console.log('I am in userDao');
 // };
 
+// 회원가입시 데이터 넣는 함수(위의 회원가입에서도 연동 확인되면 삭제 예정)
+const uploadProfile = async (image) => {
+  const profile = await myDataSource.query(`
+  INSERT INTO Users (profile_image)
+  VALUES ('${image}')
+  `)
+  return profile
+}
+
 module.exports = {
   getUserByEmail,
   createUserInDb,
   findDbUser,
   getAccountInfo,
+  uploadProfile
 };
