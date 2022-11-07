@@ -22,4 +22,26 @@ const feed = async (id, user_id) => {
   }
 };
 
-module.exports = { worksList, feed };
+// 팔로우 체결
+const following = async (following_id, user_id) => {
+  try {
+    const result = await workDao.following(following_id, user_id);
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
+};
+
+// 팔로우 체결
+const followingCancel = async (following_id, user_id) => {
+  try {
+    const result = await workDao.followingCancel(following_id, user_id);
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
+};
+
+module.exports = { worksList, feed, following, followingCancel };
