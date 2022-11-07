@@ -10,7 +10,6 @@ const myDataSource = new DataSource({
 myDataSource.initialize()
 
 const worksCategory = async (category_name) => {
-  console.log('다오1')
   const [categoryId] = await myDataSource.query(`
     SELECT id FROM Works_category WHERE category_name = '${category_name}'
   `);
@@ -19,7 +18,6 @@ const worksCategory = async (category_name) => {
 };
 
 const publicStatus = async (public_status) => {
-  console.log('다오2')
   const [statusId] = await myDataSource.query(`
     SELECT id FROM public_status WHERE status = '${public_status}'
   `);
@@ -28,7 +26,6 @@ const publicStatus = async (public_status) => {
 };
 
 const findTilte = async (title, user_id) => {
-  console.log('다오3')
   const tilteName = await myDataSource.query(`
   SELECT title FROM Works_Posting WHERE title = '${title}' and user_id = '${user_id}'
 `);
@@ -37,7 +34,6 @@ const findTilte = async (title, user_id) => {
 
 
 const uploadForm = async (title, content, user_id, category_id, status_id) => {
-  console.log('다오4')
   const posting = await myDataSource.query(`
   INSERT INTO Works_Posting (user_id, category_id, title, content, status_id)
   VALUES ('${user_id}', '${category_id}', '${title}', '${content}', '${status_id}')
@@ -46,7 +42,6 @@ const uploadForm = async (title, content, user_id, category_id, status_id) => {
 }
 
 const worksPosting = async (user_id, title) => {
-  console.log('다오5')
   const postingId = await myDataSource.query(`
     SELECT id FROM Works_Posting WHERE user_id = '${user_id}' AND title='${title}'
   `)
@@ -55,7 +50,6 @@ const worksPosting = async (user_id, title) => {
 }
 
 const uploadImages = async (posting_id, path) => {
-  console.log('다오6')
   console.log(path)
   for (let i = 0; i < path.length; i++) {
     await myDataSource.query(`
@@ -66,7 +60,6 @@ const uploadImages = async (posting_id, path) => {
 }
 
 const worksTagNames = async (arrayTag) => {
-  console.log('다오7')
   console.log(arrayTag)
   for (let i = 0; i < arrayTag.length; i++) {
   await myDataSource.query(`
@@ -77,7 +70,6 @@ const worksTagNames = async (arrayTag) => {
 }
 
 const deleteOverlapTag = async () => {
-  console.log('다오8')
   const noOverlapTag = await myDataSource.query(`
     DELETE a FROM works_tag_names a , works_tag_names b WHERE a.id > b.id AND a.name = b.name;
   `)
@@ -85,20 +77,27 @@ const deleteOverlapTag = async () => {
 }
 
 const findTagId = async (arrayTag) => {
-  console.log('다오9')
-  const tagId = []
+  const tagIdArray= []
   for (let i = 0; i < arrayTag.length; i++) {
-    tagId.push(await myDataSource.query(`
+  const [tagId] = await myDataSource.query(`
     SELECT id FROM Works_tag_names WHERE name = '${arrayTag[i]}'
     `)
-    )
+    tagIdArray.push(tagId.id)
   }
-  console.log(tagId.id)
+  return tagIdArray
+}
+
+const worksPostingTags = async (tagId, posting_id) => {
+  for (let i = 0; i < tagId.length; i++)
+  await myDataSource.query(`
+  INSERT INTO Works_Posting_tags (tag_id, posting_id)
+  VALUES ('${tagId[i]}', '${posting_id}')
+  `)
 }
 
 
 
 
 module.exports = { 
-  worksCategory, publicStatus, findTilte, uploadForm, worksPosting, worksTagNames, deleteOverlapTag, uploadImages, findTagId
+  worksCategory, publicStatus, findTilte, uploadForm, worksPosting, worksTagNames, deleteOverlapTag, uploadImages, findTagId, worksPostingTags
 }
