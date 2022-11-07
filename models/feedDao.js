@@ -10,7 +10,7 @@ const myDataSource = new DataSource({
 });
 
 myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
+  // console.log('Data Source has been initialized!');
 });
 
 // 최신 feed list
