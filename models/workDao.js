@@ -69,10 +69,9 @@ const feed = async (id, user_id) => {
         COUNT(uf.upload_url) file_cnt, 
         JSON_ARRAYAGG(
           JSON_OBJECT(
-            "file_sort", fs.file_sort, 
+            "file_sort", fs.file_sort,
             "img_url", uf.upload_url
-          )
-        ) as fileInfo
+          ) as fileInfo
       from upload_file uf  
       left join file_sort fs on uf.file_sort_id = fs.id 
       where uf.posting_id = '${id}' and uf.file_sort_id = 1
