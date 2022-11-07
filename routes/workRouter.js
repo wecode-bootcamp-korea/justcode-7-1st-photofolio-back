@@ -9,6 +9,10 @@ const workController = require('../controllers/workController');
 router.get('/list', workController.worksList);
 router.get('/:id', workController.feed); // 토큰여부 필요함
 router.post('/following', validateToken, workController.following); //토큰 필요!!
-router.post('/following-cancel', validateToken, workController.followingCancel); //토큰 필요!!
+router.delete(
+  '/following-cancel',
+  validateToken,
+  workController.followingCancel
+); //토큰 필요!!
 
 module.exports = router;
