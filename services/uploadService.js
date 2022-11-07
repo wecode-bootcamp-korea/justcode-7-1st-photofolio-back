@@ -33,4 +33,4 @@ const uploadImages = async (title, content, arrayTag, image, category_name, user
 
 
 
-module.exports = { uploadImages, uploadTest }
+module.exports = { uploadImages }

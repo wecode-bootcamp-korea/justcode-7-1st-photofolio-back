@@ -50,7 +50,6 @@ const worksPosting = async (user_id, title) => {
 }
 
 const uploadImages = async (posting_id, path) => {
-  console.log(path)
   for (let i = 0; i < path.length; i++) {
     await myDataSource.query(`
   INSERT INTO upload_file (posting_id, file_sort_id, upload_url)
@@ -60,7 +59,6 @@ const uploadImages = async (posting_id, path) => {
 }
 
 const worksTagNames = async (arrayTag) => {
-  console.log(arrayTag)
   for (let i = 0; i < arrayTag.length; i++) {
   await myDataSource.query(`
   INSERT INTO Works_tag_names (name)
