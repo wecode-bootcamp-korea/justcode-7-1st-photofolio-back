@@ -207,6 +207,18 @@ const feed = async (id, user_id) => {
       };
     });
 
+    // feed + 총 공감수
+    let sympathyCount = await myDataSource.query(
+      `
+      SELECT COUNT(*) as total_sympathy_cnt
+      from Works_Sympathy_Count wsc 
+      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
+      left join Users u on u.id = wsc.user_id 
+      left join Works_Posting wp ON wsc.posting_id = wp.id 
+      where wp.id = '${id}'
+      `
+    );
+
     // feed + 공감별 개수
     let sympathySortCount = await myDataSource.query(
       `
@@ -217,19 +229,6 @@ const feed = async (id, user_id) => {
       left join Works_Posting wp ON wsc.posting_id = wp.id 
       where wp.id = '${id}'
       GROUP by ws.sympathy_sort 
-      `
-    );
-
-    // feed + 총 공감수
-    let sympathyCount = await myDataSource.query(
-      `
-      SELECT COUNT(*)
-      from Works_Sympathy_Count wsc 
-      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
-      left join Users u on u.id = wsc.user_id 
-      left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = '${id}'
-      GROUP by wsc.created_at
       `
     );
 
