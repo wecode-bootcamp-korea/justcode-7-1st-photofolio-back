@@ -12,9 +12,9 @@ const worksList = async () => {
 };
 
 // 지정된 피드 상세
-const feed = async id => {
+const feed = async (id, user_id) => {
   try {
-    const result = await workDao.feed(id);
+    const result = await workDao.feed(id, user_id);
     return result;
   } catch (err) {
     console.log(err);
