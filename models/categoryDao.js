@@ -9,7 +9,7 @@ const myDataSource = new DataSource({
 });
 
 myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
+  // console.log('Data Source has been initialized!');
 });
 
 // 카테고리별 피드 리스트 현재 하드코딩 상태. 리팩토링 해야함!

@@ -10,7 +10,7 @@ const myDataSource = new DataSource({
 const bcrypt = require('bcryptjs');
 
 myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
+  // console.log('Data Source has been initialized!');
 });
 
 const getUserByEmail = async email => {
