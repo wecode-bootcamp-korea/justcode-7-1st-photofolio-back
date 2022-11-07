@@ -249,3 +249,6 @@ $RECYCLE.BIN/
 =======
 *.sql
 >>>>>>> 4c6ddd3 (merge하기 전 기록용commit)
+
+.env
+/db
