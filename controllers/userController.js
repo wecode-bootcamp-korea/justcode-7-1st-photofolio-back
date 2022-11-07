@@ -1,7 +1,6 @@
 const { json } = require('express');
-const { util } = require('../middlewares/util');
 const userService = require('../services/userService');
-
+const { util } = require('../middlewares/util');
 
 const createUser = async (req, res) => {
   try {

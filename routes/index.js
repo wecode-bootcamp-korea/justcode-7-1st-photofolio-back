@@ -1,4 +1,3 @@
-const { application } = require('express');
 const express = require('express');
 const router = express.Router();
 
@@ -13,7 +12,5 @@ router.use('/user', userRouter);
 router.use('/works', workRouter);
 router.use('/feeds', feedRouter);
 router.use('/category', categoryRouter);
-router.use('/upload', workRouter);
 router.use('/upload', uploadRouter);
-
 module.exports = router;

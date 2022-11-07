@@ -12,3 +12,5 @@ router.get('/travel', categoryController.categoryList3); // 토큰여부 불필�
 router.get('/animal', categoryController.categoryList4); // 토큰여부 불필요
 
 module.exports = router;
+
+module.exports = router;
