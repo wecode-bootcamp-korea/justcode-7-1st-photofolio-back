@@ -8,8 +8,5 @@ const feedRouter = require('./feedRouter');
 const workRouter = require('./workRouter');
 
 router.use('/user', userRouter);
-router.use('/works', workRouter);
-router.use('/feeds', feedRouter);
-router.use('/category', categoryRouter);
 
 module.exports = router;

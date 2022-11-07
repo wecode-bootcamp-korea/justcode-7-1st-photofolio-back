@@ -1,5 +1,4 @@
 const { json } = require('express');
-const { SimpleConsoleLogger } = require('typeorm');
 const userService = require('../services/userService');
 
 const createUser = async (req, res) => {
@@ -10,7 +9,7 @@ const createUser = async (req, res) => {
       password_check,
       kor_name,
       eng_name,
-      nickname,
+      country,
       email,
       profile_image,
     } = req.body;
@@ -36,7 +35,7 @@ const createUser = async (req, res) => {
       password_check,
       kor_name,
       eng_name,
-      nickname,
+      country,
       email,
       profile_image
     );
@@ -75,6 +74,7 @@ const loginUser = async (req, res) => {
 };
 
 const getAccountInfo = async (req, res) => {
+  console.log('띠용');
   try {
     user_id = req.user_id;
     if (!user_id) {
@@ -92,157 +92,10 @@ const getAccountInfo = async (req, res) => {
   }
 };
 
-const modifyAccountInfo = async (req, res) => {
-  try {
-    user_id = req.user_id;
-    const { kor_name, eng_name, email, nickname } = req.body;
-    const essentialKeys = { kor_name, eng_name, email, nickname };
-    if (!user_id) {
-      const error = new Error('No user_id in req');
-      error.statusCode = 404;
-      throw error;
-    }
-    Object.keys(essentialKeys).map(key => {
-      if (!essentialKeys[key]) {
-        const error = new Error(`KEY_ERROR : '${key}'`);
-        error.statusCode = 400;
-        throw error;
-      }
-    });
-    const userdata = await userService.modifyAccountInfo(
-      user_id,
-      kor_name,
-      eng_name,
-      email,
-      nickname
-    );
-    res
-      .status(200)
-      .json({ message: 'user information has been modified', data: userdata });
-    console.log(`user_id ${user_id}'s information has been modified`);
-  } catch (error) {
-    console.log(error.message);
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
-const deleteAccount = async (req, res) => {
-  try {
-    user_id = req.user_id;
-    if (!user_id) {
-      const error = new Error('NO USER_ID IN REQ');
-      error.statusCode = 404;
-      throw error;
-    }
-    await userService.deleteAccount(user_id);
-    res.status(200).json({
-      message: `USER ${user_id}'s HAS BEEN REMOVED`,
-    });
-    console.log(`USER ${user_id}'s HAS BEEN REMOVED`);
-  } catch (error) {
-    console.log(error.message);
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
-const getComment = async (req, res) => {
-  try {
-    //게시물id가 없을 경우 에러 발생
-    const { posting_id } = req.body;
-    if (!posting_id) {
-      const error = new Error('VALID POSTING_ID NEEDED');
-      error.statusCode = 404;
-      throw error;
-    }
-    const commentDisplayed = await userService.getComment(posting_id);
-    res.status(200).json({
-      data: commentDisplayed,
-    }),
-      console.log(`comment displayed`);
-  } catch (error) {
-    console.log(error.message);
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
-const postComment = async (req, res) => {
-  try {
-    user_id = req.user_id;
-    const { comment, posting_id } = req.body;
-    //댓글 내용이 없을 경우 에러 발생
-    if (!comment) {
-      const error = new Error('COMMENT TEXT NEEDED');
-      error.statusCode = 404;
-      throw error;
-    }
-    // 게시물id가 없을 경우 에러 발생
-    if (!posting_id) {
-      const error = new Error('VALID POSTING_ID NEEDED');
-      error.statusCode = 404;
-      throw error;
-    }
-    const postedComment = await userService.postComment(
-      comment,
-      posting_id,
-      user_id
-    );
-    res.status(200).json({
-      data: postedComment,
-    });
-    console.log(`comment posted`);
-  } catch (error) {
-    console.log(error.message);
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
-const modifiyComment = async (req, res) => {
-  try {
-    user_id = req.user_id;
-    const { posting_id, comment, comment_id } = req.body;
-    const modifiedComment = await userService.modifiyComment(
-      posting_id,
-      comment,
-      user_id,
-      comment_id
-    );
-    res.status(200).json({
-      data: modifiedComment,
-    });
-    console.log(`COMMENT MODIFIED`);
-  } catch (error) {
-    console.log(error.message);
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
-const deleteComment = async (req, res) => {
-  try {
-    user_id = req.user_id;
-    const { comment_id } = req.body;
-    await userService.deleteComment(user_id, comment_id);
-    res.status(200).json({ message: 'COMMENT DELETED' });
-    console.log('COMMENT DELETED');
-  } catch (error) {
-    console.log(error.message);
-    res.status(error.statusCode).json({ message: error.message });
-  }
-};
-
 // const layerConnectionTest = async () => {
 //   console.log('I am in userController1');
 //   await userService.layerConnectionTest();
 //   console.log('I am in userController2');
 // };
 
-module.exports = {
-  createUser,
-  loginUser,
-  getAccountInfo,
-  deleteAccount,
-  modifyAccountInfo,
-  getComment,
-  postComment,
-  modifiyComment,
-  deleteComment,
-};
+module.exports = { createUser, loginUser, getAccountInfo };
