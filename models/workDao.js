@@ -9,7 +9,7 @@ const myDataSource = new DataSource({
 });
 
 myDataSource.initialize().then(() => {
-  // console.log('Data Source has been initialized!');
+  console.log('Data Source has been initialized!');
 });
 
 // 카테고리별 총 게시물 수 + 최신 feed list
@@ -104,10 +104,10 @@ const feed = async (id, user_id) => {
       join Works_Category wc on wc.id = wp.category_id
       left join Works_Posting_tags wpt  ON wp.id = wpt.posting_id
       left join Works_tag_names wtn on wpt.tag_id = wtn.id
-      where wp.id = 7
-    `
+      where wp.id = '${id}'
+      `
     );
-    console.log(feedWithTags);
+
     feedWithTags = [...feedWithTags].map(item => {
       return {
         ...item,
@@ -155,7 +155,6 @@ const feed = async (id, user_id) => {
       WHERE wp.user_id = b.user_id
       `
     );
-
     moreFeedinfo = [...moreFeedinfo].map(item => {
       return {
         user_feed_cnt: JSON.parse(item.user_feed_cnt),
