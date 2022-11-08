@@ -116,7 +116,7 @@ const loginUser = async (login_id, password) => {
     throw error;
   }
   const pwSame = bcrypt.compareSync(password, dbUser.password);
-  if (!pwSame) {
+  if (password !== dbUser.password) {
     const error = new Error('비밀번호가 다릅니다.');
     error.statusCode = 400;
     throw error;
@@ -147,10 +147,31 @@ const getAccountInfo = async user_id => {
   return userdata;
 };
 
-// const layerConnectionTest = async () => {
-//   console.log('I am in userService1');
-//   await userDao.layerConnectionTest();
-//   console.log('I am in userService2');
-// };
+const modifyAccountInfo = async (
+  user_id,
+  kor_name,
+  eng_name,
+  email,
+  nickname
+) => {
+  const userdata = await userDao.modifyAccountInfo(
+    user_id,
+    kor_name,
+    eng_name,
+    email,
+    nickname
+  );
+  return userdata;
+};
 
-module.exports = { createUser, loginUser, getAccountInfo };
+const deleteAccount = async user_id => {
+  await userDao.deleteAccount(user_id);
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  getAccountInfo,
+  modifyAccountInfo,
+  deleteAccount,
+};

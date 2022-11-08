@@ -75,17 +75,16 @@ const loginUser = async (req, res) => {
 };
 
 const getAccountInfo = async (req, res) => {
-  console.log('띠용');
   try {
     user_id = req.user_id;
     if (!user_id) {
-      const error = new Error('No user_id in req');
+      const error = new Error('NO USER_ID IN REQ');
       error.statusCode = 404;
       throw error;
     }
     const userdata = await userService.getAccountInfo(user_id);
     res.status(200).json({ data: userdata });
-    console.log(`user_id ${user_id}'s information is being displayed`);
+    console.log(`USER_ID ${user_id}'s INFORMATION IS BEING DISPLAYED`);
     return userdata;
   } catch (error) {
     console.log(error.message);
@@ -93,10 +92,63 @@ const getAccountInfo = async (req, res) => {
   }
 };
 
-// const layerConnectionTest = async () => {
-//   console.log('I am in userController1');
-//   await userService.layerConnectionTest();
-//   console.log('I am in userController2');
-// };
+const modifyAccountInfo = async (req, res) => {
+  try {
+    user_id = req.user_id;
+    const { kor_name, eng_name, email, nickname } = req.body;
+    const essentialKeys = { kor_name, eng_name, email, nickname };
+    if (!user_id) {
+      const error = new Error('NO USER_ID IN REQ');
+      error.statusCode = 404;
+      throw error;
+    }
+    Object.keys(essentialKeys).map(key => {
+      if (!essentialKeys[key]) {
+        const error = new Error(`KEY_ERROR : '${key}'`);
+        error.statusCode = 400;
+        throw error;
+      }
+    });
+    const userdata = await userService.modifyAccountInfo(
+      user_id,
+      kor_name,
+      eng_name,
+      email,
+      nickname
+    );
+    res
+      .status(200)
+      .json({ message: 'USER INFORMATION HAS BEEN MODIFIED', data: userdata });
+    console.log(`USER_ID ${user_id}'s INFORMATION HAS BEEN MODIFIED`);
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
 
-module.exports = { createUser, loginUser, getAccountInfo };
+const deleteAccount = async (req, res) => {
+  try {
+    user_id = req.user_id;
+    if (!user_id) {
+      const error = new Error('NO USER_ID IN REQ');
+      error.statusCode = 404;
+      throw error;
+    }
+    await userService.deleteAccount(user_id);
+    res.status(200).json({
+      message: `USER ${user_id}'s HAS BEEN REMOVED`,
+    });
+    console.log(`USER ${user_id}'s HAS BEEN REMOVED`);
+  } catch (error) {
+    console.log(error.message);
+    res.status(error.statusCode).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  createUser,
+  loginUser,
+  getAccountInfo,
+  modifyAccountInfo,
+  deleteAccount,
+};

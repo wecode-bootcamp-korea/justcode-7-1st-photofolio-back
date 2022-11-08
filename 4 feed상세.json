@@ -1,0 +1,107 @@
+{
+  "feedImgArr": [
+    {
+      "file_cnt": "1",
+      "fileInfo": [
+        {
+          "img_url": "http://dummyimage.com/716x780.png/dddddd/000000",
+          "file_sort": "Image"
+        }
+      ]
+    }
+  ],
+  "feedWithTags": [
+    {
+      "id": 5,
+      "user_id": 12,
+      "title": "Eubalaena australis",
+      "content": "Toxic effect of aflatoxin and other mycotoxin food contaminants",
+      "view_count": 0,
+      "status": "private",
+      "created_at": "2022-11-05",
+      "nickname": "Nickname3",
+      "profile_image": "https://images.unsplash.com/photo-1666437690675-33598341e082?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDE1fHRvd0paRnNrcEdnfHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=900&q=60",
+      "tag_cnt": "1",
+      "tagInfo": [{ "tag_name": "프론트엔드" }]
+    }
+  ],
+  "feedCommentInfo": [
+    {
+      "id": 8,
+      "user_id": 8,
+      "comment": "Social Worker",
+      "created_at": "2022-11-05",
+      "updated_at": "2022-11-05"
+    },
+    {
+      "id": 42,
+      "user_id": 6,
+      "comment": "Graphic Designer",
+      "created_at": "2022-11-05",
+      "updated_at": "2022-11-05"
+    },
+    {
+      "id": 45,
+      "user_id": 6,
+      "comment": "Actuary",
+      "created_at": "2022-11-05",
+      "updated_at": "2022-11-05"
+    }
+  ],
+  "moreFeedinfo": [
+    {
+      "user_feed_cnt": { "user_feed_cnt": 6 },
+      "more_feed": [
+        {
+          "id": 4,
+          "title": "Spermophilus lateralis",
+          "img_url": "http://dummyimage.com/716x780.png/dddddd/000000"
+        },
+        {
+          "id": 5,
+          "title": "Eubalaena australis",
+          "img_url": "http://dummyimage.com/898x1640.png/dddddd/000000"
+        },
+        {
+          "id": 14,
+          "title": "Bassariscus astutus",
+          "img_url": "http://dummyimage.com/1636x1666.png/cc0000/ffffff"
+        },
+        {
+          "id": 21,
+          "title": "Tragelaphus angasi",
+          "img_url": "http://dummyimage.com/1625x708.png/ff4444/ffffff"
+        },
+        {
+          "id": 24,
+          "title": "Isoodon obesulus",
+          "img_url": "http://dummyimage.com/1194x726.png/5fa2dd/ffffff"
+        },
+        {
+          "id": 30,
+          "title": "Corvus albicollis",
+          "img_url": "http://dummyimage.com/998x1613.png/dddddd/000000"
+        }
+      ]
+    }
+  ],
+  "checkFollow": [{ "success": "0" }],
+  "followInfo": [
+    {
+      "id": 12,
+      "login_id": "kakaotalk",
+      "kor_name": "장나라",
+      "eng_name": "Donall Hanrahan",
+      "profile_image": "https://images.unsplash.com/photo-1666437690675-33598341e082?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHx0b3BpYy1mZWVkfDE1fHRvd0paRnNrcEdnfHxlbnwwfHx8fA%3D%3D&auto=format&fit=crop&w=900&q=60",
+      "nickname": "Nickname3",
+      "follower_cnt": "{\"follower_cnt\": 2}",
+      "followerInfo": [
+        { "follower_id": 4, "follwer_name": "Sweden" },
+        { "follower_id": 9, "follwer_name": "Senegal" }
+      ],
+      "followerCnt": { "follower_cnt": 2 }
+    }
+  ],
+  "sympathyCount": [{ "total_sympathy_cnt": "0" }],
+  "sympathySortCount": []
+}

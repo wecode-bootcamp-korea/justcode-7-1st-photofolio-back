@@ -44,4 +44,9 @@ const followingCancel = async (following_id, user_id) => {
   }
 };
 
-module.exports = { worksList, feed, following, followingCancel };
+module.exports = {
+  worksList,
+  feed,
+  following,
+  followingCancel,
+};

@@ -9,7 +9,7 @@ const myDataSource = new DataSource({
 });
 const bcrypt = require('bcryptjs');
 
-myDataSource.initialize()
+myDataSource.initialize();
 
 const getUserByEmail = async email => {
   const user = await myDataSource.query(`
@@ -54,23 +54,43 @@ const getAccountInfo = async user_id => {
   `);
   return userdata;
 };
-// const layerConnectionTest = async () => {
-//   console.log('I am in userDao');
-// };
+
+const modifyAccountInfo = async (
+  user_id,
+  kor_name,
+  eng_name,
+  email,
+  nickname
+) => {
+  await myDataSource.query(
+    `UPDATE USERS SET kor_name='${kor_name}', eng_name='${eng_name}', email='${email}', nickname='${nickname}' WHERE id='${user_id}';`
+  );
+  const [userdata] = await myDataSource.query(`
+  SELECT * FROM USERS WHERE ID = '${user_id}';
+  `);
+  return userdata;
+};
+
+const deleteAccount = async user_id => {
+  await myDataSource.query(`SET foreign_key_checks = 0`);
+  await myDataSource.query(`DELETE FROM USERS WHERE id='${user_id}'`);
+};
 
 // 회원가입시 데이터 넣는 함수(위의 회원가입에서도 연동 확인되면 삭제 예정)
-const uploadProfile = async (image) => {
+const uploadProfile = async image => {
   const profile = await myDataSource.query(`
   INSERT INTO Users (profile_image)
   VALUES ('${image}')
-  `)
-  return profile
-}
+  `);
+  return profile;
+};
 
 module.exports = {
   getUserByEmail,
   createUserInDb,
   findDbUser,
   getAccountInfo,
-  uploadProfile
+  modifyAccountInfo,
+  deleteAccount,
+  uploadProfile,
 };

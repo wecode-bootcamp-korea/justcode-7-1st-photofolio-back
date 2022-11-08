@@ -1,4 +1,4 @@
-const { DataSource } = require('typeorm');
+const { DataSource, SimpleConsoleLogger } = require('typeorm');
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
   host: process.env.TYPEORM_HOST,
@@ -71,6 +71,7 @@ const feed = async (id, user_id) => {
           JSON_OBJECT(
             "file_sort", fs.file_sort,
             "img_url", uf.upload_url
+            )
           ) as fileInfo
       from upload_file uf  
       left join file_sort fs on uf.file_sort_id = fs.id 
@@ -80,17 +81,17 @@ const feed = async (id, user_id) => {
     feedImgArr = [...feedImgArr].map(item => {
       return {
         ...item,
-        fileInfo: JSON.parse(item.fileInfo),
+        // fileInfo: JSON.parse(item.fileInfo),
+        fileInfo: item.fileInfo,
       };
     });
-
     // feed 정보와 사용자 정보 + 태그 카운트
     let feedWithTags = await myDataSource.query(
       `
       SELECT
       	wp.id, wp.user_id, wp.title, wp.content, wp.view_count, 
 	      ps.status, SUBSTRING(wp.created_at,1,10) as created_at,
-        u.nickname, u.profile_image,
+        u.kor_name, u.profile_image,
 	      COUNT(wpt.id) as tag_cnt,
 	      JSON_ARRAYAGG(
           JSON_OBJECT(
@@ -106,25 +107,36 @@ const feed = async (id, user_id) => {
       where wp.id = '${id}'
       `
     );
-
+    // u.nickname, u.profile_image, 94번줄에 있던 u.nickname을 u.kor_name으로 변경
     feedWithTags = [...feedWithTags].map(item => {
       return {
         ...item,
-        tagInfo: JSON.parse(item.tagInfo),
+        tagInfo: item.tagInfo,
+        // tagInfo: JSON.parse(item.tagInfo),
       };
     });
 
     let feedCommentInfo = await myDataSource.query(
       `
-      SELECT c.id, c.user_id, c.comment, 
+      SELECT c.id, c.user_id, users.kor_name, c.comment, 
         SUBSTRING(c.created_at,1,10) as created_at , 
         SUBSTRING(c.updated_at,1,10) as updated_at  
       from Comment c 
       left join Works_Posting wp on c.posting_id = wp.id 
+      left join users on users.id = c.user_id 
       where wp.id = '${id}'
       order by created_at ASC 
       `
     );
+
+    //   SELECT c.id, c.user_id, c.comment,
+    //   SUBSTRING(c.created_at,1,10) as created_at ,
+    //   SUBSTRING(c.updated_at,1,10) as updated_at
+    // from Comment c
+    // left join Works_Posting wp on c.posting_id = wp.id
+    // where wp.id = '${id}'
+    // order by created_at ASC
+    // `
 
     // feed 글쓴이의 다른 작품들
     let moreFeedinfo = await myDataSource.query(
@@ -156,8 +168,10 @@ const feed = async (id, user_id) => {
     );
     moreFeedinfo = [...moreFeedinfo].map(item => {
       return {
-        user_feed_cnt: JSON.parse(item.user_feed_cnt),
-        more_feed: JSON.parse(item.more_feed),
+        // user_feed_cnt: JSON.parse(item.user_feed_cnt),
+        // more_feed: JSON.parse(item.more_feed),
+        user_feed_cnt: item.user_feed_cnt,
+        more_feed: item.more_feed,
       };
     });
     // feed 글쓴이와 유저와의 팔로우 관계
@@ -201,8 +215,10 @@ const feed = async (id, user_id) => {
     followInfo = [...followInfo].map(item => {
       return {
         ...item,
-        followerCnt: JSON.parse(item.follower_cnt),
-        followerInfo: JSON.parse(item.followerInfo),
+        // followerCnt: JSON.parse(item.follower_cnt),
+        // followerInfo: JSON.parse(item.followerInfo),
+        followerCnt: item.follower_cnt,
+        followerInfo: item.followerInfo,
       };
     });
 
@@ -304,4 +320,9 @@ const followingCancel = async (following_id, user_id) => {
   return result;
 };
 
-module.exports = { worksList, feed, following, followingCancel };
+module.exports = {
+  worksList,
+  feed,
+  following,
+  followingCancel,
+};
