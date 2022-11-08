@@ -1,18 +1,19 @@
 const jwt = require('jsonwebtoken');
 const { DataSource } = require('typeorm');
+
 const myDataSource = new DataSource({
   type: process.env.TYPEORM_CONNECTION,
   host: process.env.TYPEORM_HOST,
   port: process.env.TYPEORM_PORT,
   username: process.env.TYPEORM_USERNAME,
   password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE,
+  database: process.env.TYPEORM_DATABASE
 });
 
-// myDataSource.initialize()
-//   .then(() => {
-//     console.log("Data Source has been initialized!")
-//   });
+myDataSource.initialize()
+  .then(() => {
+    console.log("Data Source has been initialized!")
+  });
 
 const validateToken = (req, res, next) => {
   // 인증 완료
@@ -42,5 +43,5 @@ const validateToken = (req, res, next) => {
 };
 
 module.exports = {
-  validateToken,
+  validateToken
 };
