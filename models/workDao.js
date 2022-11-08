@@ -141,7 +141,7 @@ const feed = async (id, user_id) => {
         WHERE wp.id = '${id}'
       )
       SELECT 
-        COUNT(wp.id) as user_feed_cnt,
+        COUNT(wp.id)+1 as user_feed_cnt,
         JSON_ARRAYAGG(
           JSON_OBJECT(
                 "id", wp.id,
@@ -152,7 +152,7 @@ const feed = async (id, user_id) => {
       from Works_Posting wp   
       left JOIN tables1 a on a.id = wp.id 
       left join tables2 b on b.user_id = wp.user_id 
-      WHERE wp.user_id = b.user_id
+      WHERE wp.user_id = b.user_id and NOT wp.id = '${id}'
       `
     );
     moreFeedinfo = [...moreFeedinfo].map(item => {
@@ -181,27 +181,50 @@ const feed = async (id, user_id) => {
     let writerInfo = await myDataSource.query(
       `
       SELECT
-      u.id, u.login_id, u.kor_name, u.eng_name, u.profile_image, u.nickname,  
-      COUNT(f.follower_id) as follower_cnt,
-      JSON_ARRAYAGG(
-        JSON_OBJECT(
+        wp.id, u.id as id, u.login_id login_id, u.kor_name kor_name, 
+        u.eng_name eng_name, u.profile_image profile_image, u.nickname nickname,  
+        COUNT(f.follower_id) as follower_cnt,
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
           "follower_id", f.follower_id,
-          "follwer_name", u2.nickname
-        )
-      ) as followerInfo
-      from Works_Posting wp
-      right join Users u on u.id = wp.user_id
-  	  RIGHT join Follow f on f.following_id = u.id  
-      left join Users u2 on u2.id = f.follower_id
-      where wp.id = '${id}'
+          "follower_name", u2.nickname
+          )
+        ) as follower_list,
+        ( 
+          SELECT COUNT(f.following_id)		
+          from Works_Posting wp
+          left join Users u on u.id = wp.user_id  
+          left join Follow f on f.follower_id = u.id 
+          left join Users u2 on u2.id = f.following_id 
+          WHERE wp.id = '${id}'
+        ) as following_cnt,
+        ( 
+        SELECT 
+          JSON_ARRAYAGG(
+            JSON_OBJECT(
+            "following_id", f.following_id,
+            "following_name", u2.nickname
+            )
+          )
+        from Works_Posting wp
+        left join Users u on u.id = wp.user_id  
+        left join Follow f on f.follower_id = u.id 
+        left join Users u2 on u2.id = f.following_id 
+        WHERE wp.id = '${id}'
+        ) as following_list
+        from Works_Posting wp
+        left join Users u on u.id = wp.user_id
+        left join Follow f on f.following_id = u.id  
+        left join Users u2 on u2.id = f.follower_id 
+        where wp.id = '${id}'
       `
     );
 
     writerInfo = [...writerInfo].map(item => {
       return {
         ...item,
-        followerCnt: JSON.parse(item.follower_cnt),
-        followerInfo: JSON.parse(item.followerInfo),
+        follower_list: JSON.parse(item.follower_list),
+        following_list: JSON.parse(item.following_list),
       };
     });
 
