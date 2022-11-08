@@ -25,6 +25,7 @@ const createUser = async (req, res) => {
       password_check,
       kor_name,
       eng_name,
+      nickname,
       email,
     ];
 

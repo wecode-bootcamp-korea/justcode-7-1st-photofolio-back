@@ -39,7 +39,7 @@ const createUser = async (
   }
 
   if (password.length < 8 || password.length > 20) {
-    throw new Error('8자리 ~ 20자리 이내로 입력해주세요.');
+    throw new Error('비밀번호는 8자리 ~ 20자리 이내로 입력해주세요.');
   }
 
   if (password.search(/\s/) != -1) {
@@ -51,7 +51,7 @@ const createUser = async (
     password.search(eng) < 0 ||
     password.search(spe) < 0
   ) {
-    throw new Error('영문,숫자, 특수문자를 혼합하여 입력해주세요.');
+    throw new Error('영문, 숫자, 특수문자를 혼합하여 입력해주세요.');
   }
 
   if (password.search(korAll) > 0) {
@@ -88,10 +88,6 @@ const createUser = async (
 
   if (!reg_email.test(email)) {
     throw new Error('이메일 확인 부탁드립니다');
-  }
-
-  if (!email.includes('@') || !email.includes('.')) {
-    throw new Error('이메일 주소가 맞나요?');
   }
 
   const userEmail = await userDao.getUserByEmail(email);
