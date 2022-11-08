@@ -79,6 +79,8 @@ const feed = async (id, user_id) => {
       `
     );
     feedImgArr = [...feedImgArr].map(item => {
+      console.log(typeof item.fileInfo);
+      console.log(typeof item.file_cnt);
       return {
         ...item,
         fileInfo: JSON.parse(item.fileInfo),
