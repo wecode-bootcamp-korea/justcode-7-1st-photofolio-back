@@ -133,7 +133,9 @@ const feed = async (id, user_id) => {
     let moreFeedinfo = await myDataSource.query(
       `
       with tables1 as (
-        select id, posting_id, upload_url as img_url from upload_file
+        select id, posting_id, upload_url as img_url,
+        SUBSTRING(created_at,1,10) as created_at
+        from upload_file
         WHERE (posting_id, id) 
         IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
       ), tables2 as (
@@ -142,12 +144,17 @@ const feed = async (id, user_id) => {
       )
       SELECT 
         COUNT(wp.id)+1 as user_feed_cnt,
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
+        CONCAT(
+        	'[',
+        	GROUP_CONCAT(
+	          JSON_OBJECT(
                 "id", wp.id,
                 "title", wp.title,
-                "img_url", a.img_url
-              )
+                "img_url", a.img_url,
+                "created_at", a.created_at
+              ) order by wp.id DESC  
+	        ),
+          ']'
         ) as more_feed
       from Works_Posting wp   
       left JOIN tables1 a on a.id = wp.id 
@@ -169,13 +176,6 @@ const feed = async (id, user_id) => {
         where wp.id = '${id}' and follower_id = '${user_id}') as success
       `
     );
-
-    // const followerCnt = await myDataSource.query(
-    //   `
-    //   SELECT count(*) from Follow f
-    //   WHERE f.following_id = '${followeeId}'
-    //   `
-    // );
 
     // feed 글쓴이에 대한 팔로워 정보
     let writerInfo = await myDataSource.query(
@@ -270,26 +270,7 @@ const feed = async (id, user_id) => {
   }
 };
 
-// ----------------------------
-// follow 여부 관련
-const isfollow = async (followeeId, user_id) => {
-  const checkFollow = await myDataSource.query(
-    `
-    select EXISTS (select id from Follow f  where '${followeeId}' and '${user_id}') as success
-    `
-  );
-
-  const followerCnt = await myDataSource.query(
-    `
-    SELECT count(*) from Follow f 
-    WHERE f.following_id = '${followeeId}'
-    `
-  );
-
-  let result = { checkFollow, followerCnt };
-  return result;
-};
-
+// -----------------------------------------------------------------------
 // follow 체결 관련
 const following = async (following_id, user_id) => {
   const follow = await myDataSource.query(
@@ -325,5 +306,23 @@ const followingCancel = async (following_id, user_id) => {
   let result = { deleteResult };
   return result;
 };
+
+// // 공감
+// const following = async (following_id, user_id) => {
+//   const follow = await myDataSource.query(
+//     `
+//     INSERT into Follow (following_id, follower_id)
+//     values ('${following_id}', '${user_id}')
+//     `
+//   );
+//   const followingResult = await myDataSource.query(
+//     `
+//     SELECT * from Follow f
+//     WHERE following_id = '${following_id}' and follower_id = '${user_id}'
+//     `
+//   );
+//   let result = { followingResult };
+//   return result;
+// };
 
 module.exports = { worksList, feed, following, followingCancel };
