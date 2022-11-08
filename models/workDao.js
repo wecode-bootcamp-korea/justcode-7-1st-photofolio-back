@@ -141,9 +141,7 @@ const feed = async (id, user_id) => {
         WHERE wp.id = '${id}'
       )
       SELECT 
-          JSON_OBJECT(
-          "user_feed_cnt", COUNT(wp.id)
-        ) as user_feed_cnt,
+        COUNT(wp.id) as user_feed_cnt,
         JSON_ARRAYAGG(
           JSON_OBJECT(
                 "id", wp.id,
@@ -180,13 +178,11 @@ const feed = async (id, user_id) => {
     // );
 
     // feed 글쓴이에 대한 팔로워 정보
-    let followInfo = await myDataSource.query(
+    let writerInfo = await myDataSource.query(
       `
       SELECT
       u.id, u.login_id, u.kor_name, u.eng_name, u.profile_image, u.nickname,  
-      JSON_OBJECT(
-        "follower_cnt", COUNT(f.follower_id)
-      ) as follower_cnt,
+      COUNT(f.follower_id) as follower_cnt,
       JSON_ARRAYAGG(
         JSON_OBJECT(
           "follower_id", f.follower_id,
@@ -201,7 +197,7 @@ const feed = async (id, user_id) => {
       `
     );
 
-    followInfo = [...followInfo].map(item => {
+    writerInfo = [...writerInfo].map(item => {
       return {
         ...item,
         followerCnt: JSON.parse(item.follower_cnt),
@@ -240,7 +236,7 @@ const feed = async (id, user_id) => {
       feedCommentInfo,
       moreFeedinfo,
       checkFollow,
-      followInfo,
+      writerInfo,
       sympathyCount,
       sympathySortCount,
     };
