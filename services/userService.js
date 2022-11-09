@@ -1,6 +1,5 @@
 const userDao = require('../models/userDao');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 const createUser = async (
   login_id,
@@ -29,12 +28,18 @@ const createUser = async (
     throw new Error('아이디는 공백 없이 입력해주세요.');
   }
 
+  const userId = await userDao.getUserByEmail(login_id);
+
+  if (userId.length !== 0) {
+    throw new Error('해당 아이디가 이미 존재합니다.');
+  }
+
   if (password !== password_check) {
     throw new Error('비밀번호가 서로 다릅니다.');
   }
 
   if (password.length < 8 || password.length > 20) {
-    throw new Error('8자리 ~ 20자리 이내로 입력해주세요.');
+    throw new Error('비밀번호는 8자리 ~ 20자리 이내로 입력해주세요.');
   }
 
   if (password.search(/\s/) != -1) {
@@ -46,7 +51,7 @@ const createUser = async (
     password.search(eng) < 0 ||
     password.search(spe) < 0
   ) {
-    throw new Error('영문,숫자, 특수문자를 혼합하여 입력해주세요.');
+    throw new Error('영문, 숫자, 특수문자를 혼합하여 입력해주세요.');
   }
 
   if (password.search(korAll) > 0) {
@@ -85,17 +90,13 @@ const createUser = async (
     throw new Error('이메일 확인 부탁드립니다');
   }
 
-  if (!email.includes('@') || !email.includes('.')) {
-    throw new Error('이메일 주소가 맞나요?');
+  const userEmail = await userDao.getUserByEmail(email);
+
+  if (userEmail.length !== 0) {
+    throw new Error('해당 이메일이 이미 존재합니다.');
   }
 
-  const user = await userDao.getUserByEmail(email);
-
-  if (user.length !== 0) {
-    throw new Error('유저가 이미 존재합니다.');
-  }
-
-  const createdUser = await userDao.createUserInDb(
+  await userDao.createUserInDb(
     login_id,
     password,
     kor_name,
@@ -104,8 +105,6 @@ const createUser = async (
     email,
     profile_image
   );
-
-  return createdUser;
 };
 
 const loginUser = async (login_id, password) => {
@@ -121,25 +120,7 @@ const loginUser = async (login_id, password) => {
     error.statusCode = 400;
     throw error;
   }
-  //받은 요청의 id와 password로 DB에서 프로필사진, 닉네임 등 로그인 정보를 가져온다.
-  const name = dbUser.kor_name;
-  const profile = dbUser.profile_image;
-  const id = dbUser.id;
-  const userEmail = dbUser.email;
-  token = jwt.sign(
-    {
-      type: 'JWT',
-      name: name,
-      profile: profile,
-      id: id,
-      email: userEmail,
-    },
-    process.env.SECRET_KEY,
-    {
-      expiresIn: '30m', // 만료시간 30분
-      issuer: '토큰발급자',
-    }
-  );
+    return dbUser
 };
 
 const getAccountInfo = async user_id => {
