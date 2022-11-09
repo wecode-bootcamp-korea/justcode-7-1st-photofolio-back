@@ -7,7 +7,8 @@ const workController = require('../controllers/workController');
 const { validateTokenForView } = require('../middlewares/validateTokenForView');
 
 // 카테고리별 총 게시물 수 + 최신 feed list
-router.get('/list', workController.worksList);
+router.get('/list/', workController.worksList);
+router.get('/list/:sort', workController.worksList); // sort 종류 ('recommendpoint', 'sympathycnt')
 router.get('/:id', workController.feed); // 토큰여부 필요함
 router.post('/following', validateToken, workController.following); //토큰 필요!!
 router.delete(

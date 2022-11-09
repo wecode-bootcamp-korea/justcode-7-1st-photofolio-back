@@ -16,7 +16,7 @@ const searchList = async (query, category_id) => {
     if (!category_id) {
       const resultCount = await myDataSource.query(
         `
-        SELECT COUNT(*)
+        SELECT COUNT(*) result_cnt
         from Works_Posting wp  
         WHERE wp.title  LIKE "%${query}%" OR wp.content LIKE "%${query}%" 
         ORDER BY wp.created_at DESC 
