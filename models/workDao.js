@@ -8,9 +8,7 @@ const myDataSource = new DataSource({
   database: process.env.TYPEORM_DATABASE,
 });
 
-myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
-});
+myDataSource.initialize();
 
 // 카테고리별 총 게시물 수 + 최신 feed list
 const worksList = async () => {

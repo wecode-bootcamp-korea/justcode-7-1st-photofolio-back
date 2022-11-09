@@ -8,9 +8,7 @@ const myDataSource = new DataSource({
   database: process.env.TYPEORM_DATABASE,
 });
 
-myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
-});
+myDataSource.initialize();
 
 // 카테고리별 피드 리스트 - 1.fashion 2.pattern 3.travel 4.animal
 const categoryList = async categoryName => {
