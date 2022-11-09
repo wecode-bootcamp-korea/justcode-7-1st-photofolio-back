@@ -355,97 +355,117 @@ const feed = async (id, user_id) => {
 // -----------------------------------------------------------------------
 // follow 체결 관련
 const following = async (following_id, user_id) => {
-  const follow = await myDataSource.query(
-    `
+  try {
+    const follow = await myDataSource.query(
+      `
     INSERT into Follow (following_id, follower_id) 
     values ('${following_id}', '${user_id}') 
     `
-  );
-  const followingResult = await myDataSource.query(
-    `
+    );
+    const followingResult = await myDataSource.query(
+      `
     SELECT * from Follow f 
     WHERE following_id = '${following_id}' and follower_id = '${user_id}'
     `
-  );
-  let result = { followingResult };
-  return result;
+    );
+    let result = { followingResult };
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
 };
 
 // follow 취소 관련
 const followingCancel = async (following_id, user_id) => {
-  const deleteFollow = await myDataSource.query(
-    `
+  try {
+    const deleteFollow = await myDataSource.query(
+      `
     DELETE from Follow 
     WHERE following_id = '${following_id}' and follower_id = '${user_id}'
     `
-  );
-  const deleteResult = await myDataSource.query(
-    `
+    );
+    const deleteResult = await myDataSource.query(
+      `
     SELECT count(*) from Follow f 
     WHERE following_id = '${following_id}' and follower_id = '${user_id}'
     `
-  );
-  let result = { deleteResult };
-  return result;
+    );
+    let result = { deleteResult };
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
 };
 
 // 공감
 const sympathy = async (posting_id, user_id, sympathy_id) => {
-  const checkSympathy = await myDataSource.query(
-    `
+  try {
+    const checkSympathy = await myDataSource.query(
+      `
     SELECT COUNT(*) check_cnt FROM Works_Sympathy_Count wsc
     WHERE posting_id = '${posting_id}' and user_id = '${user_id}'
     `
-  );
-  let checkValue = checkSympathy[0].check_cnt;
-  console.log('checkValue =', checkValue);
-  if (checkValue == 0) {
-    const insertSympathy = await myDataSource.query(
-      `
+    );
+    let checkValue = checkSympathy[0].check_cnt;
+    console.log('checkValue =', checkValue);
+    if (checkValue == 0) {
+      const insertSympathy = await myDataSource.query(
+        `
       INSERT INTO Works_Sympathy_Count (user_id, posting_id, sympathy_id)
       VALUES ('${user_id}', '${posting_id}', '${sympathy_id}')
       `
-    );
-    const result = await myDataSource.query(
-      `
+      );
+      const result = await myDataSource.query(
+        `
       SELECT * FROM Works_Sympathy_Count wsc 
       WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
       `
-    );
-    return result;
-  } else if (checkValue == 1) {
-    const insertSympathy = await myDataSource.query(
-      `
+      );
+      return result;
+    } else if (checkValue == 1) {
+      const insertSympathy = await myDataSource.query(
+        `
       UPDATE Works_Sympathy_Count SET sympathy_id = '${sympathy_id}'
       WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
       `
-    );
-    const result = await myDataSource.query(
-      `
+      );
+      const result = await myDataSource.query(
+        `
       SELECT * FROM Works_Sympathy_Count wsc 
       WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
       `
-    );
-    return result;
+      );
+      return result;
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
   }
 };
 
 // 공감 취소
 const sympathyCancel = async (posting_id, user_id) => {
-  const deleteSympathy = await myDataSource.query(
-    `
+  try {
+    const deleteSympathy = await myDataSource.query(
+      `
     DELETE FROM Works_Sympathy_Count 
     WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
     `
-  );
-  const checkSympathy = await myDataSource.query(
-    `
+    );
+    const checkSympathy = await myDataSource.query(
+      `
     SELECT COUNT(*) check_cnt FROM Works_Sympathy_Count wsc
     WHERE posting_id = '${posting_id}' and user_id = '${user_id}'
     `
-  );
-  let result = { checkSympathy };
-  return result;
+    );
+    let result = { checkSympathy };
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
 };
 
 module.exports = {
