@@ -15,5 +15,7 @@ router.delete(
   validateToken,
   workController.followingCancel
 ); //토큰 필요!!
+router.post('/sympathy', validateToken, workController.sympathy); // 공감
+router.delete('/sympathy', validateToken, workController.sympathyCancel); // 공감취소
 
 module.exports = router;
