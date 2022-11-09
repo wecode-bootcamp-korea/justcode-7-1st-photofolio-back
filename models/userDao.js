@@ -62,7 +62,6 @@ const getAccountInfo = async user_id => {
   return userdata;
 };
 
-<<<<<<< HEAD
 const modifyAccountInfo = async (
   user_id,
   kor_name,
@@ -92,12 +91,34 @@ const uploadProfile = async image => {
   `);
   return profile;
 };
-=======
-// const layerConnectionTest = async () => {
-//   console.log('I am in userDao');
-// };
 
->>>>>>> develop
+const myChannel = async (req, res) => {
+  let userInfo = await myDataSource.query(
+    `
+    select id as user_id,kor_name, eng_name, nickname from users where id =1
+    `
+  );
+  console.log(userInfo, '여긴다오');
+  let userFollowingInfo = await myDataSource.query(
+    `
+    SELECT COUNT(follow.following_id) as following_cnt, 
+    JSON_ARRAYAGG(
+      JSON_OBJECT(
+"follower_id", follow.follower_id,
+      "following_id", follow.following_id
+        )
+      ) as following_info
+  from follow
+  where follow.following_id = 1
+    `
+  );
+
+  let result = {
+    userInfo,
+    userFollowingInfo,
+  };
+  return result;
+};
 
 module.exports = {
   getUserById,
@@ -105,10 +126,8 @@ module.exports = {
   createUserInDb,
   findDbUser,
   getAccountInfo,
-<<<<<<< HEAD
   modifyAccountInfo,
   deleteAccount,
   uploadProfile,
-=======
->>>>>>> develop
+  myChannel,
 };

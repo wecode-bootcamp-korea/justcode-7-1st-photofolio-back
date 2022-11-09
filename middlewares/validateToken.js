@@ -10,13 +10,7 @@ const myDataSource = new DataSource({
   database: process.env.TYPEORM_DATABASE,
 });
 
-<<<<<<< HEAD
-myDataSource.initialize().then(() => {
-  console.log('Data Source has been initialized!');
-});
-=======
 myDataSource.initialize();
->>>>>>> develop
 
 const validateToken = (req, res, next) => {
   // 인증 완료

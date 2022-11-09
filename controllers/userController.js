@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: '30m', // 만료시간 30분
+        expiresIn: '30000000000000m', // 만료시간 30분
         issuer: '토큰발급자',
       }
     );
@@ -171,10 +171,18 @@ const deleteAccount = async (req, res) => {
   }
 };
 
+// My Channel 내용 출력
+const myChannel = async (req, res) => {
+  const result = await userService.myChannel();
+  res.status(200).json({ result });
+  console.log(result);
+};
+
 module.exports = {
   createUser,
   loginUser,
   getAccountInfo,
   modifyAccountInfo,
   deleteAccount,
+  myChannel,
 };

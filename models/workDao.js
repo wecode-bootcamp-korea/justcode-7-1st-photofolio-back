@@ -277,8 +277,10 @@ const feed = async (id, user_id) => {
     writerInfo = [...writerInfo].map(item => {
       return {
         ...item,
-        follower_list: JSON.parse(item.follower_list),
-        following_list: JSON.parse(item.following_list),
+        follower_list: item.follower_list,
+        following_list: item.following_list,
+        // follower_list: JSON.parse(item.follower_list),
+        // following_list: JSON.parse(item.following_list),
       };
     });
 

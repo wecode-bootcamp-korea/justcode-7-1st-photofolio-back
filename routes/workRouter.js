@@ -18,10 +18,6 @@ router.delete(
 ); //토큰 필요!!
 router.post('/sympathy', validateToken, workController.sympathy); // 공감
 router.delete('/sympathy', validateToken, workController.sympathyCancel); // 공감취소
-
-<<<<<<< HEAD
 router.post('/sympathy', validateToken, workController.sympathy); //토큰 필요!!
 
-=======
->>>>>>> develop
 module.exports = router;
