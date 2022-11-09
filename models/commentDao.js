@@ -12,22 +12,15 @@ myDataSource.initialize().then(() => {
   console.log('Data Source has been initialized!');
 });
 
-const getComment = async posting_id => {
-  const commentDisplayed = await myDataSource.query(
-    `SELECT comment.id as comment_id, user_id, posting_id, comment, DATE_FORMAT(comment.created_at, '%Y-%m-%d') as created_at, DATE_FORMAT(comment.updated_at,'%Y-%m-%d') as updated_at, nickname FROM COMMENT 
-    LEFT JOIN USERS ON users.id = comment.user_id where posting_id = ${posting_id};`
-  );
-  return commentDisplayed;
-};
-
 const postComment = async (comment, id, user_id) => {
   await myDataSource.query(
     `INSERT COMMENT SET comment='${comment}', posting_id=${id}, user_id=${user_id};`
   );
-  const postedComment = await myDataSource.query(
-    `SELECT * FROM COMMENT WHERE comment.id = (SELECT MAX(id) FROM COMMENT);`
+  const allCommentsAfterModifying = await myDataSource.query(
+    `SELECT * FROM COMMENT where posting_id = ${id} 
+    order by created_at desc;`
   );
-  return postedComment;
+  return allCommentsAfterModifying;
 };
 
 const modifiyComment = async (id, comment, user_id, comment_id) => {
@@ -49,10 +42,11 @@ const modifiyComment = async (id, comment, user_id, comment_id) => {
   await myDataSource.query(
     `UPDATE COMMENT SET comment='${comment}', user_id=${user_id}, posting_id=${id} WHERE id=${comment_id};`
   );
-  const modifedComment = await myDataSource.query(
-    `SELECT * FROM COMMENT WHERE id=${comment_id};`
+  const allCommentsAfterModifying = await myDataSource.query(
+    `SELECT * FROM COMMENT where posting_id = ${id} 
+    order by created_at desc;`
   );
-  return modifedComment;
+  return allCommentsAfterModifying;
 };
 
 const deleteComment = async (user_id, comment_id) => {
@@ -76,9 +70,4 @@ const deleteComment = async (user_id, comment_id) => {
   await myDataSource.query(`DELETE FROM comment where id=${comment_id}`);
 };
 
-module.exports = {
-  getComment,
-  postComment,
-  modifiyComment,
-  deleteComment,
-};
+module.exports = { postComment, modifiyComment, deleteComment };

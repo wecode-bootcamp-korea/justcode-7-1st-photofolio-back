@@ -44,9 +44,15 @@ const followingCancel = async (following_id, user_id) => {
   }
 };
 
+//좋아요
+const sympathy = async (user_id, posting_id) => {
+  await workDao.sympathy(user_id, posting_id);
+};
+
 module.exports = {
   worksList,
   feed,
   following,
   followingCancel,
+  sympathy,
 };

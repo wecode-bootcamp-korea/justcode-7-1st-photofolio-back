@@ -3,10 +3,10 @@ const router = express.Router();
 
 // 토큰이 필요할시,
 const { validateToken } = require('../middlewares/validateToken');
+const commentController = require('../controllers/commentController');
 
-// router.get('/comment', workController.getComment);
-router.post('/comment', validateToken, workController.postComment);
-router.patch('/comment', validateToken, workController.modifiyComment);
-router.delete('/comment', validateToken, workController.deleteComment);
+router.post('/', validateToken, commentController.postComment);
+router.patch('/', validateToken, commentController.modifiyComment);
+router.delete('/', validateToken, commentController.deleteComment);
 
 module.exports = router;

@@ -320,9 +320,18 @@ const followingCancel = async (following_id, user_id) => {
   return result;
 };
 
+//좋아요
+const sympathy = async (user_id, posting_id) => {
+  // 쿼리문짜기
+  // 1. 사용자가 해당 게시물을 좋아요 한 적이 있는지 쿼리문으로 검색
+  // 2. 있다면 해당 좋아요 취소
+  // 3. 없다면 좋아요 추가
+};
+
 module.exports = {
   worksList,
   feed,
   following,
   followingCancel,
+  sympathy,
 };

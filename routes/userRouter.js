@@ -10,13 +10,10 @@ const userController = require('../controllers/userController');
 
 //로그인
 router.post('/login', userController.loginUser);
-
 //계정정보조회페이지
 router.post('/accountInfo', validateToken, userController.getAccountInfo);
-
 //계정정보수정
 router.patch('/accountInfo', validateToken, userController.modifyAccountInfo);
-
 //계정삭제
 router.delete('/accountInfo', validateToken, userController.deleteAccount);
 
