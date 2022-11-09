@@ -128,8 +128,6 @@ const feed = async (id, user_id) => {
       `
     );
     feedImgArr = [...feedImgArr].map(item => {
-      console.log(typeof item.fileInfo);
-      console.log(typeof item.file_cnt);
       return {
         ...item,
         fileInfo: JSON.parse(item.fileInfo),
@@ -192,7 +190,7 @@ const feed = async (id, user_id) => {
         WHERE wp.id = '${id}'
       )
       SELECT 
-        COUNT(wp.id)+1 as user_feed_cnt,
+        COUNT(wp.id) as user_feed_cnt,
         CONCAT(
         	'[',
         	GROUP_CONCAT(
@@ -292,13 +290,19 @@ const feed = async (id, user_id) => {
     // feed + 공감별 개수
     let sympathySortCount = await myDataSource.query(
       `
-      SELECT ws.sympathy_sort, COUNT(wsc.id) as sympathy_cnt
-      from Works_Sympathy_Count wsc 
-      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
-      left join Users u on u.id = wsc.user_id 
-      left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = '${id}'
-      GROUP by ws.sympathy_sort 
+      with tables as (
+        SELECT wp.id id,  ws.sympathy_sort sympathy_sort, 
+          IFNULL(COUNT(wsc.id), '0') as sympathy_cnt
+        FROM  Works_Sympathy ws
+          LEFT JOIN Works_Sympathy_Count wsc on ws.id  = wsc.sympathy_id 
+          LEFT JOIN Users u on u.id = wsc.user_id 
+          LEFT JOIN Works_Posting wp ON wsc.posting_id = wp.id 
+          WHERE wp.id = '${id}'
+          GROUP by ws.sympathy_sort
+          )
+      
+      SELECT a.id, ws.sympathy_sort, IFNULL(a.sympathy_cnt, '0') sympathy_cnt from Works_Sympathy ws 
+      LEFT JOIN tables a on a.sympathy_sort = ws.sympathy_sort 
       `
     );
 

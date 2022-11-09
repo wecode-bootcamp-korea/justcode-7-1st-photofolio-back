@@ -29,7 +29,9 @@ const categoryList = async categoryName => {
         WHERE (posting_id, id) 
         IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
       ) 
-      SELECT wp.id, c.img_url, wc.category_name, wc.eng_category_name, u.nickname, wp.title, IFNULL(a.comment_cnt, '0') as comment_cnt, IFNULL(b.sympathy_cnt, '0') as sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10) created_at
+      SELECT wp.id, c.img_url, wc.category_name, wc.eng_category_name, u.nickname, wp.title, 
+        IFNULL(a.comment_cnt, '0') as comment_cnt, IFNULL(b.sympathy_cnt, '0') as sympathy_cnt, 
+        wp.view_count, SUBSTRING(wp.created_at,1,10) created_at
       from Works_Posting wp 
       join Users u on wp.user_id = u.id 
       left join Works_Category wc ON wp.category_id = wc.id 
