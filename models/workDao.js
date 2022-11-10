@@ -100,8 +100,26 @@ const worksList = async sort => {
   }
 };
 
+// feed 글쓴이와 유저와의 팔로우 관계
+const followCheck = async (id, user_id) => {
+  try {
+    const checkFollow = await myDataSource.query(
+      `
+    select EXISTS (select f.id from Follow f
+      left join Works_Posting wp on wp.user_id = f.following_id
+      where wp.id = '${id}' and follower_id = '${user_id}') as success
+    `
+    );
+    let result = { checkFollow };
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
+};
+
 // feed 상세
-const feed = async (id, user_id) => {
+const feed = async id => {
   try {
     // 조회수 카운팅 (IP주소나 시간만료 같은 장치는 아직 없음.)
     const viewCount = await myDataSource.query(
@@ -203,7 +221,7 @@ const feed = async (id, user_id) => {
         WHERE wp.id = '${id}'
       )
       SELECT 
-        COUNT(wp.id)+1 as user_feed_cnt,
+        COUNT(wp.id) as user_feed_cnt,
         CONCAT(
         	'[',
         	GROUP_CONCAT(
@@ -230,14 +248,6 @@ const feed = async (id, user_id) => {
         more_feed: item.more_feed,
       };
     });
-    // feed 글쓴이와 유저와의 팔로우 관계
-    const checkFollow = await myDataSource.query(
-      `
-      select EXISTS (select f.id from Follow f
-        left join Works_Posting wp on wp.user_id = f.following_id
-        where wp.id = '${id}' and follower_id = '${user_id}') as success
-      `
-    );
 
     // feed 글쓴이에 대한 팔로워 정보
     let writerInfo = await myDataSource.query(
@@ -307,13 +317,19 @@ const feed = async (id, user_id) => {
     // feed + 공감별 개수
     let sympathySortCount = await myDataSource.query(
       `
-      SELECT ws.sympathy_sort, COUNT(wsc.id) as sympathy_cnt
-      from Works_Sympathy_Count wsc 
-      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
-      left join Users u on u.id = wsc.user_id 
-      left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = '${id}'
-      GROUP by ws.sympathy_sort 
+      with tables as (
+        SELECT wp.id id,  ws.sympathy_sort sympathy_sort, 
+          IFNULL(COUNT(wsc.id), '0') as sympathy_cnt
+        FROM  Works_Sympathy ws
+          LEFT JOIN Works_Sympathy_Count wsc on ws.id  = wsc.sympathy_id 
+          LEFT JOIN Users u on u.id = wsc.user_id 
+          LEFT JOIN Works_Posting wp ON wsc.posting_id = wp.id 
+          WHERE wp.id = '${id}'
+          GROUP by ws.sympathy_sort
+          )
+      
+      SELECT a.id, ws.sympathy_sort, IFNULL(a.sympathy_cnt, '0') sympathy_cnt from Works_Sympathy ws 
+      LEFT JOIN tables a on a.sympathy_sort = ws.sympathy_sort 
       `
     );
     // sympathySortCount가 0일 경우, 오류가 발생하여 게시글이 출력되지 않음.
@@ -356,7 +372,6 @@ const feed = async (id, user_id) => {
       feedWithTags,
       feedCommentInfo,
       moreFeedinfo,
-      checkFollow,
       writerInfo,
       sympathyCount,
       sympathySortCount,
@@ -370,175 +385,8 @@ const feed = async (id, user_id) => {
   }
 };
 
-// -----------------------------------------------------------------------
-// follow 체결 관련
-const following = async (following_id, user_id) => {
-  const follow = await myDataSource.query(
-    `
-    INSERT into Follow (following_id, follower_id) 
-    values ('${following_id}', '${user_id}') 
-    `
-  );
-  const followingResult = await myDataSource.query(
-    `
-    SELECT * from Follow f 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  let result = { followingResult };
-  return result;
-};
-
-// follow 취소 관련
-const followingCancel = async (following_id, user_id) => {
-  const deleteFollow = await myDataSource.query(
-    `
-    DELETE from Follow 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  const deleteResult = await myDataSource.query(
-    `
-    SELECT count(*) from Follow f 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  let result = { deleteResult };
-  return result;
-};
-
-// 공감
-const sympathy = async (posting_id, user_id, sympathy_id) => {
-  const checkSympathy = await myDataSource.query(
-    `
-    SELECT COUNT(*) check_cnt FROM Works_Sympathy_Count wsc
-    WHERE posting_id = '${posting_id}' and user_id = '${user_id}'
-    `
-  );
-  let checkValue = checkSympathy[0].check_cnt;
-  console.log('checkValue =', checkValue);
-  if (checkValue == 0) {
-    const insertSympathy = await myDataSource.query(
-      `
-      INSERT INTO Works_Sympathy_Count (user_id, posting_id, sympathy_id)
-      VALUES ('${user_id}', '${posting_id}', '${sympathy_id}')
-      `
-    );
-    const result = await myDataSource.query(
-      `
-      SELECT * FROM Works_Sympathy_Count wsc 
-      WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-      `
-    );
-    return result;
-  } else if (checkValue == 1) {
-    const insertSympathy = await myDataSource.query(
-      `
-      UPDATE Works_Sympathy_Count SET sympathy_id = '${sympathy_id}'
-      WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-      `
-    );
-    const result = await myDataSource.query(
-      `
-      SELECT * FROM Works_Sympathy_Count wsc 
-      WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-      `
-    );
-    return result;
-  }
-};
-
-// 공감 취소
-const sympathyCancel = async (posting_id, user_id) => {
-  const deleteSympathy = await myDataSource.query(
-    `
-    DELETE FROM Works_Sympathy_Count 
-    WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-    `
-  );
-  const checkSympathy = await myDataSource.query(
-    `
-    SELECT COUNT(*) check_cnt FROM Works_Sympathy_Count wsc
-    WHERE posting_id = '${posting_id}' and user_id = '${user_id}'
-    `
-  );
-  let result = { checkSympathy };
-  return result;
-};
-
-const myChannel = async (loggedIn_id, user_id) => {
-  let loggedIn_userInfo = [];
-  loggedIn_userInfo[0] = { loggedIn_id };
-  let userInfo = await myDataSource.query(
-    `
-    select id as user_id, nickname, kor_name, eng_name, email, profile_image from users where id ='${user_id}'
-    `
-  );
-  let userFollowingInfo = await myDataSource.query(
-    `
-    SELECT COUNT(follow.following_id) as following_cnt, 
-    JSON_ARRAYAGG(
-      JSON_OBJECT(
-"follower_id", follow.follower_id,
-      "following_id", follow.following_id
-        )
-      ) as following_info
-  from follow
-  where follow.following_id = '${loggedIn_id}'
-    `
-  );
-  let userFollowerInfo = await myDataSource.query(`
-  SELECT COUNT(follow.follower_id) as follower_cnt, 
-  JSON_ARRAYAGG(
-    JSON_OBJECT(
-    "following_id", follow.following_id,
-"follower_id", follow.follower_id
-      )
-    ) as follower_info
-from follow
-where follow.follower_id = '${loggedIn_id}'`);
-
-  let usersPosts = await myDataSource.query(
-    `      with tables1 as (
-      select wp.id as id, COUNT(*) as comment_cnt FROM Works_Posting wp 
-      join Comment c on wp.id = c.posting_id 
-      GROUP BY wp.id 
-    ), tables2 as (
-      SELECT wp.id as id, COUNT(*) as sympathy_cnt from Works_Posting wp 
-      join Works_Sympathy_Count wsc on wp.id = wsc.posting_id 
-      left join Works_Sympathy ws on wsc.sympathy_id = ws.id 
-      GROUP BY wp.id 
-    ), tables3 as (
-      select id, posting_id, upload_url as img_url from upload_file
-      WHERE (posting_id, id) 
-      IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
-    )
-    SELECT wp.id, wp.user_id, u.nickname, u.profile_image,  c.img_url, wp.title, 
-      IFNULL(a.comment_cnt, '0') comment_cnt, IFNULL(b.sympathy_cnt, '0') sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10) as created_at
-    from Works_Posting wp 
-    left join Users u on wp.user_id = u.id 
-    left JOIN tables3 c on c.posting_id = wp.id
-    left join tables1 a on a.id = wp.id 
-    left JOIN tables2 b on b.id = wp.id 
-    where wp.user_id = '${user_id}'
-    ORDER BY wp.id DESC`
-  );
-  let result = {
-    // loggedIn_userInfo,
-    userInfo,
-    userFollowingInfo,
-    userFollowerInfo,
-    usersPosts,
-  };
-  return result;
-};
-
 module.exports = {
+  followCheck,
   worksList,
   feed,
-  following,
-  followingCancel,
-  sympathy,
-  sympathyCancel,
-  myChannel,
 };

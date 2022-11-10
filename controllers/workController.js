@@ -1,5 +1,18 @@
 const workService = require('../services/workService');
 
+// 상세피드에서 로그인유저의 팔로잉 체크여부
+const followCheck = async (req, res) => {
+  try {
+    const { id } = req.params;
+    user_id = req.user_id;
+    const result = await workService.followCheck(id, user_id);
+    res.status(200).json(result);
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
+};
+
 // 카테고리별 총 게시물 수 + 최신 feed list
 const worksList = async (req, res) => {
   try {
@@ -16,61 +29,7 @@ const worksList = async (req, res) => {
 const feed = async (req, res) => {
   try {
     const { id } = req.params;
-    user_id = req.user_id;
-    const result = await workService.feed(id, user_id);
-    // console.log(result);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 팔로우 체결
-const following = async (req, res) => {
-  try {
-    const { following_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.following(following_id, user_id);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-//팔로우 취소
-const followingCancel = async (req, res) => {
-  try {
-    const { following_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.followingCancel(following_id, user_id);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 공감
-const sympathy = async (req, res) => {
-  try {
-    const { posting_id, sympathy_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.sympathy(posting_id, user_id, sympathy_id);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 공감 취소
-const sympathyCancel = async (req, res) => {
-  try {
-    const { posting_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.sympathyCancel(posting_id, user_id);
+    const result = await workService.feed(id);
     res.status(200).json(result);
   } catch (err) {
     console.log(err);
@@ -87,7 +46,17 @@ const myChannel = async (req, res) => {
   res.status(200).json(result);
 };
 
+// My Channel 내용 출력
+const myChannel = async (req, res) => {
+  const loggedIn_id = req.user_id;
+  const { id } = req.params;
+  const user_id = id;
+  const result = await userService.myChannel(loggedIn_id, user_id);
+  res.status(200).json(result);
+};
+
 module.exports = {
+  followCheck,
   worksList,
   feed,
   following,
