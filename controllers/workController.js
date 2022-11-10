@@ -16,60 +16,7 @@ const worksList = async (req, res) => {
 const feed = async (req, res) => {
   try {
     const { id } = req.params;
-    user_id = req.user_id;
-    const result = await workService.feed(id, user_id);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 팔로우 체결
-const following = async (req, res) => {
-  try {
-    const { following_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.following(following_id, user_id);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-//팔로우 취소
-const followingCancel = async (req, res) => {
-  try {
-    const { following_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.followingCancel(following_id, user_id);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 공감
-const sympathy = async (req, res) => {
-  try {
-    const { posting_id, sympathy_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.sympathy(posting_id, user_id, sympathy_id);
-    res.status(200).json(result);
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
-// 공감 취소
-const sympathyCancel = async (req, res) => {
-  try {
-    const { posting_id } = req.body;
-    user_id = req.user_id;
-    const result = await workService.sympathyCancel(posting_id, user_id);
+    const result = await workService.feed(id);
     res.status(200).json(result);
   } catch (err) {
     console.log(err);
@@ -80,8 +27,4 @@ const sympathyCancel = async (req, res) => {
 module.exports = {
   worksList,
   feed,
-  following,
-  followingCancel,
-  sympathy,
-  sympathyCancel,
 };
