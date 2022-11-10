@@ -10,24 +10,6 @@ const myDataSource = new DataSource({
 
 myDataSource.initialize();
 
-// feed 글쓴이와 유저와의 팔로우 관계
-const followCheck = async user_id => {
-  try {
-    const checkFollow = await myDataSource.query(
-      `
-    select EXISTS (select f.id from Follow f
-      left join Works_Posting wp on wp.user_id = f.following_id
-      where wp.id = '${id}' and follower_id = '${user_id}') as success
-    `
-    );
-    let result = { checkFollow };
-    return result;
-  } catch (err) {
-    console.log(err);
-    res.status(err.statusCode).json({ message: err.message });
-  }
-};
-
 // follow 체결 관련
 const following = async (following_id, user_id) => {
   try {

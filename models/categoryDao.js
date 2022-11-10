@@ -60,7 +60,6 @@ const tagCount = async () => {
       GROUP BY wtn.id 
       `
     );
-    console.log('dao tagcount =', result);
     return result;
   } catch (err) {
     console.log(err);

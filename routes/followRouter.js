@@ -5,11 +5,7 @@ const router = express.Router();
 const { validateToken } = require('../middlewares/validateToken');
 const followController = require('../controllers/followController');
 
-router.post('/following', validateToken, followController.following); //토큰 필요!!
-router.delete(
-  '/following-cancel',
-  validateToken,
-  followController.followingCancel
-); //토큰 필요!!
+router.post('', validateToken, followController.following); //토큰 필요!!
+router.delete('', validateToken, followController.followingCancel); //토큰 필요!!
 
 module.exports = router;
