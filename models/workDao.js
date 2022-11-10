@@ -100,8 +100,26 @@ const worksList = async sort => {
   }
 };
 
+// feed 글쓴이와 유저와의 팔로우 관계
+const followCheck = async (id, user_id) => {
+  try {
+    const checkFollow = await myDataSource.query(
+      `
+    select EXISTS (select f.id from Follow f
+      left join Works_Posting wp on wp.user_id = f.following_id
+      where wp.id = '${id}' and follower_id = '${user_id}') as success
+    `
+    );
+    let result = { checkFollow };
+    return result;
+  } catch (err) {
+    console.log(err);
+    res.status(err.statusCode).json({ message: err.message });
+  }
+};
+
 // feed 상세
-const feed = async (id, user_id) => {
+const feed = async id => {
   try {
     // 조회수 카운팅 (IP주소나 시간만료 같은 장치는 아직 없음.)
     const viewCount = await myDataSource.query(
@@ -128,8 +146,6 @@ const feed = async (id, user_id) => {
       `
     );
     feedImgArr = [...feedImgArr].map(item => {
-      console.log(typeof item.fileInfo);
-      console.log(typeof item.file_cnt);
       return {
         ...item,
         fileInfo: JSON.parse(item.fileInfo),
@@ -192,7 +208,7 @@ const feed = async (id, user_id) => {
         WHERE wp.id = '${id}'
       )
       SELECT 
-        COUNT(wp.id)+1 as user_feed_cnt,
+        COUNT(wp.id) as user_feed_cnt,
         CONCAT(
         	'[',
         	GROUP_CONCAT(
@@ -217,14 +233,6 @@ const feed = async (id, user_id) => {
         more_feed: JSON.parse(item.more_feed),
       };
     });
-    // feed 글쓴이와 유저와의 팔로우 관계
-    const checkFollow = await myDataSource.query(
-      `
-      select EXISTS (select f.id from Follow f
-        left join Works_Posting wp on wp.user_id = f.following_id
-        where wp.id = '${id}' and follower_id = '${user_id}') as success
-      `
-    );
 
     // feed 글쓴이에 대한 팔로워 정보
     let writerInfo = await myDataSource.query(
@@ -292,13 +300,19 @@ const feed = async (id, user_id) => {
     // feed + 공감별 개수
     let sympathySortCount = await myDataSource.query(
       `
-      SELECT ws.sympathy_sort, COUNT(wsc.id) as sympathy_cnt
-      from Works_Sympathy_Count wsc 
-      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
-      left join Users u on u.id = wsc.user_id 
-      left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = '${id}'
-      GROUP by ws.sympathy_sort 
+      with tables as (
+        SELECT wp.id id,  ws.sympathy_sort sympathy_sort, 
+          IFNULL(COUNT(wsc.id), '0') as sympathy_cnt
+        FROM  Works_Sympathy ws
+          LEFT JOIN Works_Sympathy_Count wsc on ws.id  = wsc.sympathy_id 
+          LEFT JOIN Users u on u.id = wsc.user_id 
+          LEFT JOIN Works_Posting wp ON wsc.posting_id = wp.id 
+          WHERE wp.id = '${id}'
+          GROUP by ws.sympathy_sort
+          )
+      
+      SELECT a.id, ws.sympathy_sort, IFNULL(a.sympathy_cnt, '0') sympathy_cnt from Works_Sympathy ws 
+      LEFT JOIN tables a on a.sympathy_sort = ws.sympathy_sort 
       `
     );
 
@@ -335,7 +349,6 @@ const feed = async (id, user_id) => {
       feedWithTags,
       feedCommentInfo,
       moreFeedinfo,
-      checkFollow,
       writerInfo,
       sympathyCount,
       sympathySortCount,
@@ -348,107 +361,8 @@ const feed = async (id, user_id) => {
   }
 };
 
-// -----------------------------------------------------------------------
-// follow 체결 관련
-const following = async (following_id, user_id) => {
-  const follow = await myDataSource.query(
-    `
-    INSERT into Follow (following_id, follower_id) 
-    values ('${following_id}', '${user_id}') 
-    `
-  );
-  const followingResult = await myDataSource.query(
-    `
-    SELECT * from Follow f 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  let result = { followingResult };
-  return result;
-};
-
-// follow 취소 관련
-const followingCancel = async (following_id, user_id) => {
-  const deleteFollow = await myDataSource.query(
-    `
-    DELETE from Follow 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  const deleteResult = await myDataSource.query(
-    `
-    SELECT count(*) from Follow f 
-    WHERE following_id = '${following_id}' and follower_id = '${user_id}'
-    `
-  );
-  let result = { deleteResult };
-  return result;
-};
-
-// 공감
-const sympathy = async (posting_id, user_id, sympathy_id) => {
-  const checkSympathy = await myDataSource.query(
-    `
-    SELECT COUNT(*) check_cnt FROM Works_Sympathy_Count wsc
-    WHERE posting_id = '${posting_id}' and user_id = '${user_id}'
-    `
-  );
-  let checkValue = checkSympathy[0].check_cnt;
-  console.log('checkValue =', checkValue);
-  if (checkValue == 0) {
-    const insertSympathy = await myDataSource.query(
-      `
-      INSERT INTO Works_Sympathy_Count (user_id, posting_id, sympathy_id)
-      VALUES ('${user_id}', '${posting_id}', '${sympathy_id}')
-      `
-    );
-    const result = await myDataSource.query(
-      `
-      SELECT * FROM Works_Sympathy_Count wsc 
-      WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-      `
-    );
-    return result;
-  } else if (checkValue == 1) {
-    const insertSympathy = await myDataSource.query(
-      `
-      UPDATE Works_Sympathy_Count SET sympathy_id = '${sympathy_id}'
-      WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-      `
-    );
-    const result = await myDataSource.query(
-      `
-      SELECT * FROM Works_Sympathy_Count wsc 
-      WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-      `
-    );
-    return result;
-  }
-};
-
-// 공감 취소
-const sympathyCancel = async (posting_id, user_id) => {
-  const deleteSympathy = await myDataSource.query(
-    `
-    DELETE FROM Works_Sympathy_Count 
-    WHERE user_id = '${user_id}' and posting_id = '${posting_id}'
-    `
-  );
-  const checkSympathy = await myDataSource.query(
-    `
-    SELECT COUNT(*) check_cnt FROM Works_Sympathy_Count wsc
-    WHERE posting_id = '${posting_id}' and user_id = '${user_id}'
-    `
-  );
-  let result = { checkSympathy };
-  return result;
-};
-
 module.exports = {
+  followCheck,
   worksList,
   feed,
-  following,
-  followingCancel,
-  sympathy,
-  sympathyCancel,
 };
