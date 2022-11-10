@@ -11,8 +11,8 @@ const commentRouter = require('./commentRouter');
 const searchListRouter = require('./searchListRouter');
 const sympathyRouter = require('./sympathyRouter');
 const followRouter = require('./followRouter');
-
 const uploadRouter = require('./uploadRouter');
+const channelRouter = require('./channelRouter');
 
 router.use('/user', userRouter);
 router.use('/works', workRouter);
@@ -24,5 +24,6 @@ router.use('/searchlist', searchListRouter);
 router.use('/upload', uploadRouter);
 router.use('/sympathy', sympathyRouter);
 router.use('/follow', followRouter);
+router.use('/channel', channelRouter);
 
 module.exports = router;

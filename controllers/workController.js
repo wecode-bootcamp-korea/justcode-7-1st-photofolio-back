@@ -5,6 +5,8 @@ const followCheck = async (req, res) => {
   try {
     const { id } = req.params;
     user_id = req.user_id;
+    console.log(id);
+    console.log(user_id);
     const result = await workService.followCheck(id, user_id);
     res.status(200).json(result);
   } catch (err) {
@@ -37,31 +39,8 @@ const feed = async (req, res) => {
   }
 };
 
-// My Channel 내용 출력
-const myChannel = async (req, res) => {
-  const loggedIn_id = req.user_id;
-  const { id } = req.params;
-  const user_id = id;
-  const result = await userService.myChannel(loggedIn_id, user_id);
-  res.status(200).json(result);
-};
-
-// My Channel 내용 출력
-const myChannel = async (req, res) => {
-  const loggedIn_id = req.user_id;
-  const { id } = req.params;
-  const user_id = id;
-  const result = await userService.myChannel(loggedIn_id, user_id);
-  res.status(200).json(result);
-};
-
 module.exports = {
   followCheck,
   worksList,
   feed,
-  following,
-  followingCancel,
-  sympathy,
-  sympathyCancel,
-  myChannel,
 };

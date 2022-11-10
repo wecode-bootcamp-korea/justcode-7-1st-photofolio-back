@@ -13,12 +13,14 @@ myDataSource.initialize();
 // follow 체결 관련
 const following = async (following_id, user_id) => {
   try {
+    console.log('following_id', following_id);
     const follow = await myDataSource.query(
       `
     INSERT into Follow (following_id, follower_id) 
     values ('${following_id}', '${user_id}') 
     `
     );
+
     const followingResult = await myDataSource.query(
       `
     SELECT * from Follow f 
@@ -42,6 +44,7 @@ const followingCancel = async (following_id, user_id) => {
     WHERE following_id = '${following_id}' and follower_id = '${user_id}'
     `
     );
+    console.log(deleteFollow);
     const deleteResult = await myDataSource.query(
       `
     SELECT count(*) from Follow f 
@@ -49,6 +52,7 @@ const followingCancel = async (following_id, user_id) => {
     `
     );
     let result = { deleteResult };
+    console.log(result);
     return result;
   } catch (err) {
     console.log(err);

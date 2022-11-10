@@ -33,11 +33,6 @@ const feed = async id => {
   }
 };
 
-const myChannel = async (loggedIn_id, user_id) => {
-  const result = await userDao.myChannel(loggedIn_id, user_id);
-  return result;
-};
-
 module.exports = {
   followCheck,
   worksList,
