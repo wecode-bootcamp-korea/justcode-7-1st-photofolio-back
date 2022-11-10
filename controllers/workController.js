@@ -29,6 +29,7 @@ const worksList = async (req, res) => {
 const feed = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('id is ', id);
     const result = await workService.feed(id);
     res.status(200).json(result);
   } catch (err) {
