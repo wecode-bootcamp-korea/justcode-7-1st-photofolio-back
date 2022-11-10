@@ -21,12 +21,12 @@ const validateTokenForView = (req, res, next) => {
     if (token) {
       const verifiedToken = jwt.verify(token, process.env.SECRET_KEY);
       const user_id = verifiedToken.id;
-
       req.user_id = user_id;
-    } else if (!token) {
-      next();
     }
-
+    // else if (!token) {
+    //   next();
+    // }
+    console.log(err);
     next();
   } catch (err) {
     if (error.name === 'TokenExpiredError') {

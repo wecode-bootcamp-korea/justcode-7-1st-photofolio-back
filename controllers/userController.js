@@ -171,18 +171,10 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-// My Channel 내용 출력
-const myChannel = async (req, res) => {
-  const result = await userService.myChannel();
-  res.status(200).json({ result });
-  console.log(result);
-};
-
 module.exports = {
   createUser,
   loginUser,
   getAccountInfo,
   modifyAccountInfo,
   deleteAccount,
-  myChannel,
 };

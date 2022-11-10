@@ -22,7 +22,4 @@ router.delete('/accountInfo', validateToken, userController.deleteAccount);
 // 업로드 관련 뭔가가 빠진듯 서버 안돌아가서 주석처리
 // router.get('/test', userController.layerConnectionTest);
 
-//MyChannel출력
-router.get('/myChannel', userController.myChannel);
-
 module.exports = router;

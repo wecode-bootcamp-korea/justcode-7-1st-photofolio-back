@@ -128,8 +128,6 @@ const feed = async (id, user_id) => {
       `
     );
     feedImgArr = [...feedImgArr].map(item => {
-      console.log(typeof item.fileInfo);
-      console.log(typeof item.file_cnt);
       return {
         ...item,
         // fileInfo: JSON.parse(item.fileInfo),
@@ -140,7 +138,7 @@ const feed = async (id, user_id) => {
     let feedWithTags = await myDataSource.query(
       `
       SELECT
-      	wp.id, wp.user_id, wp.title, wp.content, wp.view_count, 
+      	wp.id, wp.user_id, wp.title, wp.content, wp.view_count, upload_file.upload_url,
 	      ps.status, SUBSTRING(wp.created_at,1,10) as created_at,
         u.kor_name, u.profile_image,
 	      COUNT(wpt.id) as tag_cnt,
@@ -153,9 +151,11 @@ const feed = async (id, user_id) => {
       join Users u on wp.user_id = u.id
       join public_status ps on wp.status_id = ps.id
       join Works_Category wc on wc.id = wp.category_id
+      join upload_file on wp.id = upload_file.posting_id
       left join Works_Posting_tags wpt  ON wp.id = wpt.posting_id
       left join Works_tag_names wtn on wpt.tag_id = wtn.id
-      where wp.id = '${id}'
+      where wp.id = ${id}
+      group by wp.id, wp.user_id, wp.title, wp.content, wp.view_count, upload_file.upload_url
       `
     );
     // u.nickname, u.profile_image, 94번줄에 있던 u.nickname을 u.kor_name으로 변경
@@ -176,7 +176,7 @@ const feed = async (id, user_id) => {
       left join Works_Posting wp on c.posting_id = wp.id 
       left join users on users.id = c.user_id 
       where wp.id = '${id}'
-      order by created_at ASC 
+      order by id DESC
       `
     );
 
@@ -186,7 +186,7 @@ const feed = async (id, user_id) => {
     // from Comment c
     // left join Works_Posting wp on c.posting_id = wp.id
     // where wp.id = '${id}'
-    // order by created_at ASC
+    // order by id DESC
     // `
 
     // feed 글쓴이의 다른 작품들
@@ -316,6 +316,12 @@ const feed = async (id, user_id) => {
       GROUP by ws.sympathy_sort 
       `
     );
+    // sympathySortCount가 0일 경우, 오류가 발생하여 게시글이 출력되지 않음.
+    // 해당 부분이 비어있을 경우, 0을 할당하여 처리하도록 조치
+
+    if (sympathySortCount.length === 0) {
+      sympathySortCount.push(0);
+    }
 
     let anotherFeedList = await myDataSource.query(
       `
@@ -356,6 +362,7 @@ const feed = async (id, user_id) => {
       sympathySortCount,
       anotherFeedList,
     };
+
     return result;
   } catch (err) {
     console.log(err);
@@ -459,6 +466,73 @@ const sympathyCancel = async (posting_id, user_id) => {
   return result;
 };
 
+const myChannel = async (loggedIn_id, user_id) => {
+  let loggedIn_userInfo = [];
+  loggedIn_userInfo[0] = { loggedIn_id };
+  let userInfo = await myDataSource.query(
+    `
+    select id as user_id, nickname, kor_name, eng_name, email, profile_image from users where id ='${user_id}'
+    `
+  );
+  let userFollowingInfo = await myDataSource.query(
+    `
+    SELECT COUNT(follow.following_id) as following_cnt, 
+    JSON_ARRAYAGG(
+      JSON_OBJECT(
+"follower_id", follow.follower_id,
+      "following_id", follow.following_id
+        )
+      ) as following_info
+  from follow
+  where follow.following_id = '${loggedIn_id}'
+    `
+  );
+  let userFollowerInfo = await myDataSource.query(`
+  SELECT COUNT(follow.follower_id) as follower_cnt, 
+  JSON_ARRAYAGG(
+    JSON_OBJECT(
+    "following_id", follow.following_id,
+"follower_id", follow.follower_id
+      )
+    ) as follower_info
+from follow
+where follow.follower_id = '${loggedIn_id}'`);
+
+  let usersPosts = await myDataSource.query(
+    `      with tables1 as (
+      select wp.id as id, COUNT(*) as comment_cnt FROM Works_Posting wp 
+      join Comment c on wp.id = c.posting_id 
+      GROUP BY wp.id 
+    ), tables2 as (
+      SELECT wp.id as id, COUNT(*) as sympathy_cnt from Works_Posting wp 
+      join Works_Sympathy_Count wsc on wp.id = wsc.posting_id 
+      left join Works_Sympathy ws on wsc.sympathy_id = ws.id 
+      GROUP BY wp.id 
+    ), tables3 as (
+      select id, posting_id, upload_url as img_url from upload_file
+      WHERE (posting_id, id) 
+      IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
+    )
+    SELECT wp.id, wp.user_id, u.nickname, u.profile_image,  c.img_url, wp.title, 
+      IFNULL(a.comment_cnt, '0') comment_cnt, IFNULL(b.sympathy_cnt, '0') sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10) as created_at
+    from Works_Posting wp 
+    left join Users u on wp.user_id = u.id 
+    left JOIN tables3 c on c.posting_id = wp.id
+    left join tables1 a on a.id = wp.id 
+    left JOIN tables2 b on b.id = wp.id 
+    where wp.user_id = '${user_id}'
+    ORDER BY wp.id DESC`
+  );
+  let result = {
+    // loggedIn_userInfo,
+    userInfo,
+    userFollowingInfo,
+    userFollowerInfo,
+    usersPosts,
+  };
+  return result;
+};
+
 module.exports = {
   worksList,
   feed,
@@ -466,4 +540,5 @@ module.exports = {
   followingCancel,
   sympathy,
   sympathyCancel,
+  myChannel,
 };

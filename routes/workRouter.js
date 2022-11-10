@@ -20,4 +20,7 @@ router.post('/sympathy', validateToken, workController.sympathy); // 공감
 router.delete('/sympathy', validateToken, workController.sympathyCancel); // 공감취소
 router.post('/sympathy', validateToken, workController.sympathy); //토큰 필요!!
 
+// //channel출력
+// router.get('/:id', workController.myChannel);
+
 module.exports = router;

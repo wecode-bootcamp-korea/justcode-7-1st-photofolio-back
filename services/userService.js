@@ -149,16 +149,10 @@ const deleteAccount = async user_id => {
   await userDao.deleteAccount(user_id);
 };
 
-const myChannel = async (req, res) => {
-  const result = await userDao.myChannel();
-  return result;
-};
-
 module.exports = {
   createUser,
   loginUser,
   getAccountInfo,
   modifyAccountInfo,
   deleteAccount,
-  myChannel,
 };

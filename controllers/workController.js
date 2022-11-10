@@ -18,7 +18,7 @@ const feed = async (req, res) => {
     const { id } = req.params;
     user_id = req.user_id;
     const result = await workService.feed(id, user_id);
-    console.log(result);
+    // console.log(result);
     res.status(200).json(result);
   } catch (err) {
     console.log(err);
@@ -78,6 +78,15 @@ const sympathyCancel = async (req, res) => {
   }
 };
 
+// My Channel 내용 출력
+const myChannel = async (req, res) => {
+  const loggedIn_id = req.user_id;
+  const { id } = req.params;
+  const user_id = id;
+  const result = await userService.myChannel(loggedIn_id, user_id);
+  res.status(200).json(result);
+};
+
 module.exports = {
   worksList,
   feed,
@@ -85,4 +94,5 @@ module.exports = {
   followingCancel,
   sympathy,
   sympathyCancel,
+  myChannel,
 };
