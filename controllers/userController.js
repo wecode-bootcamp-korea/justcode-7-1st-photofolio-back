@@ -11,13 +11,13 @@ const createUser = async (req, res) => {
       kor_name,
       eng_name,
       nickname,
-      email
+      email,
     } = req.body;
 
-    let profile_image = ''
-    if (req.file !== undefined ) {
-      profile_image = req.file.location
-    } 
+    let profile_image = '';
+    if (req.file !== undefined) {
+      profile_image = req.file.location;
+    }
 
     const REQUIRE_KEYS = [
       login_id,
@@ -29,7 +29,7 @@ const createUser = async (req, res) => {
       email,
     ];
 
-    Object.keys(REQUIRE_KEYS).map((key) => {
+    Object.keys(REQUIRE_KEYS).map(key => {
       if (!REQUIRE_KEYS[key]) {
         throw new Error(`KEY_ERROR: ${key}`);
       }
@@ -66,7 +66,7 @@ const loginUser = async (req, res) => {
         throw error;
       }
     });
-    
+
     const result = await userService.loginUser(login_id, password);
     const name = result.kor_name;
     const profile = result.profile_image;
@@ -82,7 +82,7 @@ const loginUser = async (req, res) => {
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: '30m', // 만료시간 30분
+        expiresIn: '300m', // 만료시간 30분
         issuer: '토큰발급자',
       }
     );
@@ -92,7 +92,7 @@ const loginUser = async (req, res) => {
       token: token,
       id: id,
       name: name,
-      profile: profile
+      profile: profile,
     });
   } catch (err) {
     console.log(err);
@@ -101,7 +101,6 @@ const loginUser = async (req, res) => {
 };
 
 const getAccountInfo = async (req, res) => {
-  console.log('띠용');
   try {
     user_id = req.user_id;
     if (!user_id) {
@@ -124,8 +123,5 @@ const getAccountInfo = async (req, res) => {
 //   await userService.layerConnectionTest();
 //   console.log('I am in userController2');
 // };
-
-
-
 
 module.exports = { createUser, loginUser, getAccountInfo };

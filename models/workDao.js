@@ -13,7 +13,6 @@ myDataSource.initialize();
 // 카테고리별 총 게시물 수 + 최신 feed list
 const worksList = async sort => {
   try {
-    console.log('sort is ', sort);
     if (!sort) {
       const categorySortCountList = await myDataSource.query(
         `
@@ -201,35 +200,32 @@ const feed = async id => {
         select id, posting_id, upload_url as img_url,
         SUBSTRING(created_at,1,10) as created_at
         from upload_file
-        WHERE (posting_id, id) 
-        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
+        WHERE (posting_id, id)
+        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id )
       ), tables2 as (
-        SELECT * from Works_Posting wp 
+        SELECT * from Works_Posting wp
         WHERE wp.id = '${id}'
       )
-      SELECT 
+      SELECT
         COUNT(wp.id) as user_feed_cnt,
-        CONCAT(
-        	'[',
-        	GROUP_CONCAT(
-	          JSON_OBJECT(
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
                 "id", wp.id,
                 "title", wp.title,
                 "img_url", a.img_url,
                 "created_at", a.created_at
-              ) order by wp.id DESC  
-	        ),
-          ']'
-        ) as more_feed
-      from Works_Posting wp   
-      left JOIN tables1 a on a.id = wp.id 
-      left join tables2 b on b.user_id = wp.user_id 
-      WHERE wp.user_id = b.user_id and NOT wp.id = '${id}'
+              ) 
+          )  
+          as more_feed 
+      from Works_Posting wp
+      left JOIN tables1 a on a.id = wp.id
+      left join tables2 b on b.user_id = wp.user_id
+      WHERE wp.user_id = b.user_id AND NOT wp.id  = '${id}'
       `
     );
     moreFeedinfo = [...moreFeedinfo].map(item => {
       return {
-        user_feed_cnt: JSON.parse(item.user_feed_cnt),
+        ...item,
         more_feed: JSON.parse(item.more_feed),
       };
     });
