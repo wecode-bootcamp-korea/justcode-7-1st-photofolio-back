@@ -13,7 +13,6 @@ myDataSource.initialize();
 // 카테고리별 총 게시물 수 + 최신 feed list
 const worksList = async sort => {
   try {
-    console.log('sort is ', sort);
     if (!sort) {
       const categorySortCountList = await myDataSource.query(
         `
@@ -121,14 +120,6 @@ const followCheck = async (id, user_id) => {
 // feed 상세
 const feed = async id => {
   try {
-    // 조회수 카운팅 (IP주소나 시간만료 같은 장치는 아직 없음.)
-    const viewCount = await myDataSource.query(
-      `
-      UPDATE Works_Posting SET view_count = view_count + 1
-      WHERE id = '${id}'
-      `
-    );
-
     // feed img_url 배열(다수의 이미지가 있을 시)
     let feedImgArr = await myDataSource.query(
       `
@@ -156,7 +147,7 @@ const feed = async id => {
     let feedWithTags = await myDataSource.query(
       `
       SELECT
-      	wp.id, wp.user_id, wp.title, wp.content, wp.view_count, 
+      	wp.id, wp.user_id, u.kor_name, wp.title, wp.content, wp.view_count, 
 	      ps.status, SUBSTRING(wp.created_at,1,10) as created_at,
         u.nickname, u.profile_image,
 	      COUNT(wpt.id) as tag_cnt,
@@ -184,11 +175,12 @@ const feed = async id => {
 
     let feedCommentInfo = await myDataSource.query(
       `
-      SELECT c.id, c.user_id, c.comment, 
+      SELECT c.id, c.user_id, u.kor_name, c.comment, 
         SUBSTRING(c.created_at,1,10) as created_at , 
         SUBSTRING(c.updated_at,1,10) as updated_at  
       from Comment c 
-      left join Works_Posting wp on c.posting_id = wp.id 
+      left join Works_Posting wp on c.posting_id = wp.id
+      left join Users u ON u.id = c.user_id
       where wp.id = '${id}'
       order by created_at ASC 
       `
@@ -201,35 +193,32 @@ const feed = async id => {
         select id, posting_id, upload_url as img_url,
         SUBSTRING(created_at,1,10) as created_at
         from upload_file
-        WHERE (posting_id, id) 
-        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
+        WHERE (posting_id, id)
+        IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id )
       ), tables2 as (
-        SELECT * from Works_Posting wp 
+        SELECT * from Works_Posting wp
         WHERE wp.id = '${id}'
       )
-      SELECT 
+      SELECT
         COUNT(wp.id) as user_feed_cnt,
-        CONCAT(
-        	'[',
-        	GROUP_CONCAT(
-	          JSON_OBJECT(
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
                 "id", wp.id,
                 "title", wp.title,
                 "img_url", a.img_url,
                 "created_at", a.created_at
-              ) order by wp.id DESC  
-	        ),
-          ']'
-        ) as more_feed
-      from Works_Posting wp   
-      left JOIN tables1 a on a.id = wp.id 
-      left join tables2 b on b.user_id = wp.user_id 
-      WHERE wp.user_id = b.user_id and NOT wp.id = '${id}'
+              ) 
+          )  
+          as more_feed 
+      from Works_Posting wp
+      left JOIN tables1 a on a.id = wp.id
+      left join tables2 b on b.user_id = wp.user_id
+      WHERE wp.user_id = b.user_id AND NOT wp.id  = '${id}'
       `
     );
     moreFeedinfo = [...moreFeedinfo].map(item => {
       return {
-        user_feed_cnt: JSON.parse(item.user_feed_cnt),
+        ...item,
         more_feed: JSON.parse(item.more_feed),
       };
     });
@@ -341,6 +330,14 @@ const feed = async id => {
       left JOIN tables2 b on b.id = wp.id 
       where wp.id not in ("${id}")
       ORDER BY wp.created_at DESC
+      `
+    );
+
+    // 조회수 카운팅 (IP주소나 시간만료 같은 장치는 아직 없음.)
+    const viewCount = await myDataSource.query(
+      `
+      UPDATE Works_Posting SET view_count = view_count + 1
+      WHERE id = '${id}'
       `
     );
 
