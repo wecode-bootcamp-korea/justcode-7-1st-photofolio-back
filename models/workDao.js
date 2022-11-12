@@ -139,7 +139,8 @@ const feed = async id => {
     feedImgArr = [...feedImgArr].map(item => {
       return {
         ...item,
-        fileInfo: JSON.parse(item.fileInfo),
+        // fileInfo: JSON.parse(item.fileInfo),
+        fileInfo: item.fileInfo,
       };
     });
 
@@ -169,7 +170,8 @@ const feed = async id => {
     feedWithTags = [...feedWithTags].map(item => {
       return {
         ...item,
-        tagInfo: JSON.parse(item.tagInfo),
+        tagInfo: item.tagInfo,
+        // tagInfo: JSON.parse(item.tagInfo),
       };
     });
 
@@ -219,7 +221,8 @@ const feed = async id => {
     moreFeedinfo = [...moreFeedinfo].map(item => {
       return {
         ...item,
-        more_feed: JSON.parse(item.more_feed),
+        more_feed: item.more_feed,
+        // more_feed: JSON.parse(item.more_feed),
       };
     });
 
@@ -269,8 +272,10 @@ const feed = async id => {
     writerInfo = [...writerInfo].map(item => {
       return {
         ...item,
-        follower_list: JSON.parse(item.follower_list),
-        following_list: JSON.parse(item.following_list),
+        follower_list: item.follower_list,
+        following_list: item.following_list,
+        // follower_list: JSON.parse(item.follower_list),
+        // following_list: JSON.parse(item.following_list),
       };
     });
 

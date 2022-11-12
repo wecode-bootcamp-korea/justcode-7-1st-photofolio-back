@@ -120,12 +120,33 @@ const loginUser = async (login_id, password) => {
     error.statusCode = 400;
     throw error;
   }
-    return dbUser
+  return dbUser;
 };
 
 const getAccountInfo = async user_id => {
   const userdata = await userDao.getAccountInfo(user_id);
   return userdata;
+};
+
+const modifyAccountInfo = async (
+  user_id,
+  kor_name,
+  eng_name,
+  email,
+  nickname
+) => {
+  const userdata = await userDao.modifyAccountInfo(
+    user_id,
+    kor_name,
+    eng_name,
+    email,
+    nickname
+  );
+  return userdata;
+};
+
+const deleteAccount = async user_id => {
+  await userDao.deleteAccount(user_id);
 };
 
 // const layerConnectionTest = async () => {
@@ -134,8 +155,10 @@ const getAccountInfo = async user_id => {
 //   console.log('I am in userService2');
 // };
 
-
-
-
-
-module.exports = { createUser, loginUser, getAccountInfo };
+module.exports = {
+  createUser,
+  loginUser,
+  getAccountInfo,
+  modifyAccountInfo,
+  deleteAccount,
+};
