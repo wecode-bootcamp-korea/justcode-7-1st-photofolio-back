@@ -30,7 +30,7 @@ const feedsList = async user_id => {
         WHERE (posting_id, id) 
         IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
       ), tables4 as (
-      	select f.follower_id as follower_id from Follow f where f.following_id = '${user_id}'
+      	select f.following_id as follower_id from Follow f where f.follower_id = '${user_id}'
       	)
       SELECT wp.id, u.nickname, u.profile_image, c.img_url, wp.title, 
       IFNULL(a.comment_cnt, '0') comment_cnt, IFNULL(b.sympathy_cnt, '0') sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10) as created_at
@@ -40,7 +40,7 @@ const feedsList = async user_id => {
       left join tables1 a on a.id = wp.id 
       left JOIN tables2 b on b.id = wp.id
       join tables4 d on d.follower_id = u.id
-      ORDER BY wp.created_at DESC 
+      ORDER BY wp.created_at DESC  
       `
     );
     let result = { feedsList };
