@@ -41,7 +41,7 @@ const worksList = async sort => {
         IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
       ) 
     
-      SELECT wp.id, u.nickname, u.profile_image,  c.img_url, wp.title, IFNULL(a.comment_cnt, '0') comment_cnt, 
+      SELECT wp.id, u.kor_name as nickname, u.profile_image,  c.img_url, wp.title, IFNULL(a.comment_cnt, '0') comment_cnt, 
         IFNULL(b.sympathy_cnt, '0') sympathy_cnt, wp.view_count, SUBSTRING(wp.created_at,1,10) as created_at
       from Works_Posting wp 
       left join Users u on wp.user_id = u.id 
@@ -80,7 +80,7 @@ const worksList = async sort => {
           WHERE (posting_id, id) 
           IN (select posting_id, MAX(id) from upload_file WHERE file_sort_id = 1 group by posting_id ) 
         ) 
-        SELECT concat(b.sympathy_cnt + a.comment_cnt) recommendpoint, wp.id, u.nickname, u.profile_image,  c.img_url, wp.title, 
+        SELECT concat(b.sympathy_cnt + a.comment_cnt) recommendpoint, wp.id, u.kor_name as nickname, u.profile_image,  c.img_url, wp.title, 
           IFNULL(a.comment_cnt, '0') comment_cnt, IFNULL(b.sympathy_cnt, '0') sympathycnt, wp.view_count, SUBSTRING(wp.created_at,1,10) as created_at
         from Works_Posting wp 
         left join Users u on wp.user_id = u.id 
@@ -175,7 +175,7 @@ const feed = async id => {
 
     let feedCommentInfo = await myDataSource.query(
       `
-      SELECT c.id, c.user_id, u.kor_name, c.comment, 
+      SELECT c.id, c.user_id, u.kor_name as nickname, c.comment, 
         SUBSTRING(c.created_at,1,10) as created_at , 
         SUBSTRING(c.updated_at,1,10) as updated_at  
       from Comment c 
