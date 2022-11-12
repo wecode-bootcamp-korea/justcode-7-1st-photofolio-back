@@ -9,7 +9,7 @@ const myDataSource = new DataSource({
 });
 const bcrypt = require('bcryptjs');
 
-myDataSource.initialize()
+myDataSource.initialize();
 
 const getUserById = async login_id => {
   const userId = await myDataSource.query(`
@@ -62,10 +62,30 @@ const getAccountInfo = async user_id => {
   return userdata;
 };
 
+const modifyAccountInfo = async (
+  user_id,
+  kor_name,
+  eng_name,
+  email,
+  nickname
+) => {
+  await myDataSource.query(
+    `UPDATE USERS SET kor_name='${kor_name}', eng_name='${eng_name}', email='${email}', nickname='${nickname}' WHERE id='${user_id}';`
+  );
+  const [userdata] = await myDataSource.query(`
+  SELECT * FROM USERS WHERE ID = '${user_id}';
+  `);
+  return userdata;
+};
+
+const deleteAccount = async user_id => {
+  await myDataSource.query(`SET foreign_key_checks = 0`);
+  await myDataSource.query(`DELETE FROM USERS WHERE id='${user_id}'`);
+};
+
 // const layerConnectionTest = async () => {
 //   console.log('I am in userDao');
 // };
-
 
 module.exports = {
   getUserById,
@@ -73,4 +93,6 @@ module.exports = {
   createUserInDb,
   findDbUser,
   getAccountInfo,
+  modifyAccountInfo,
+  deleteAccount,
 };

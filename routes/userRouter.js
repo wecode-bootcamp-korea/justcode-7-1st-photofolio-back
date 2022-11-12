@@ -13,6 +13,11 @@ router.post('/login', userController.loginUser);
 //계정정보조회페이지
 router.post('/accountInfo', validateToken, userController.getAccountInfo);
 
+//계정정보수정
+router.patch('/accountInfo', validateToken, userController.modifyAccountInfo);
+//계정삭제
+router.delete('/accountInfo', validateToken, userController.deleteAccount);
+
 // 업로드 관련 뭔가가 빠진듯 서버 안돌아가서 주석처리
 // router.get('/test', userController.layerConnectionTest);
 
