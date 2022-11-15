@@ -11,7 +11,7 @@ myDataSource.initialize()
 
 const worksCategory = async (category_name) => {
   const [categoryId] = await myDataSource.query(`
-    SELECT id FROM Works_category WHERE category_name = '${category_name}'
+    SELECT id FROM Works_Category WHERE category_name = '${category_name}'
   `);
   const category_id = categoryId.id
   return category_id;
@@ -69,7 +69,7 @@ const worksTagNames = async (arrayTag) => {
 
 const deleteOverlapTag = async () => {
   const noOverlapTag = await myDataSource.query(`
-    DELETE a FROM works_tag_names a , works_tag_names b WHERE a.id > b.id AND a.name = b.name;
+    DELETE a FROM Works_tag_names a , Works_tag_names b WHERE a.id > b.id AND a.name = b.name;
   `)
   return noOverlapTag
 }
