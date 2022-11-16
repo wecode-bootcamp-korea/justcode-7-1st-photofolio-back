@@ -15,32 +15,45 @@ const channel = async (following_id, user_id) => {
   // loggedIn_userInfo[0] = { loggedIn_id };
   let userInfo = await myDataSource.query(
     `
-    select id as user_id, nickname, kor_name, eng_name, email, profile_image from users where id ='${following_id}'
+    select id as user_id, nickname, kor_name, eng_name, email, profile_image from Users where id ='${following_id}'
     `
   );
   let userFollowingInfo = await myDataSource.query(
     `
-    SELECT COUNT(follow.following_id) as following_cnt, 
+    SELECT COUNT(following_id) as following_cnt, 
     JSON_ARRAYAGG(
       JSON_OBJECT(
-      "follower_id", follow.follower_id,
-      "following_id", follow.following_id
+      "follower_id", follower_id,
+      "following_id", following_id
         )
       ) as following_info
-  from follow
-  where follow.following_id = '${following_id}'
+  from Follow
+  where following_id = '${following_id}'
     `
   );
+  userFollowingInfo = [...userFollowingInfo].map(item => {
+    return {
+      ...item,
+      following_info: JSON.parse(item.following_info),
+    };
+  });
+
   let userFollowerInfo = await myDataSource.query(`
   SELECT COUNT(follow.follower_id) as follower_cnt, 
   JSON_ARRAYAGG(
     JSON_OBJECT(
-    "following_id", follow.following_id,
-    "follower_id", follow.follower_id
+    "following_id", following_id,
+    "follower_id", follower_id
       )
     ) as follower_info
-from follow
-where follow.follower_id = '${following_id}'`);
+from Follow
+where follower_id = '${following_id}'`);
+  userFollowerInfo = [...userFollowerInfo].map(item => {
+    return {
+      ...item,
+      follower_info: JSON.parse(item.follower_info),
+    };
+  });
 
   let usersPosts = await myDataSource.query(
     `      with tables1 as (
