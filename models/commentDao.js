@@ -17,9 +17,9 @@ const postComment = async (comment, id, user_id) => {
     `INSERT Comment SET comment='${comment}', posting_id=${id}, user_id=${user_id};`
   );
   const allCommentsAfterModifying = await myDataSource.query(
-    `SELECT Comment.id,user_id, posting_id, kor_name, comment, SUBSTRING(comment.created_at,1,10) as created_at, SUBSTRING(comment.updated_at,1,10) as updated_at 
-    FROM Comment
-    LEFT JOIN Users on Users.id = user_id where posting_id = ${id}
+    `SELECT c.id, c.user_id, c.posting_id, u.kor_name, c.comment, SUBSTRING(c.created_at,1,10) as created_at, SUBSTRING(c.updated_at,1,10) as updated_at 
+    FROM Comment c
+    LEFT JOIN Users u on Users.id = user_id where posting_id = ${id}
         order by Comment.id asc;`
   );
   return allCommentsAfterModifying;
