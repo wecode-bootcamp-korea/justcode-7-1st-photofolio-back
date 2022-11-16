@@ -39,7 +39,7 @@ const channel = async (following_id, user_id) => {
   });
 
   let userFollowerInfo = await myDataSource.query(`
-  SELECT COUNT(follow.follower_id) as follower_cnt, 
+  SELECT COUNT(follower_id) as follower_cnt, 
   JSON_ARRAYAGG(
     JSON_OBJECT(
     "following_id", following_id,
