@@ -14,20 +14,20 @@ myDataSource.initialize().then(() => {
 
 const postComment = async (comment, id, user_id) => {
   await myDataSource.query(
-    `INSERT COMMENT SET comment='${comment}', posting_id=${id}, user_id=${user_id};`
+    `INSERT Comment SET comment='${comment}', posting_id=${id}, user_id=${user_id};`
   );
   const allCommentsAfterModifying = await myDataSource.query(
-    `SELECT comment.id,user_id, posting_id, kor_name, comment, SUBSTRING(comment.created_at,1,10) as created_at, SUBSTRING(comment.updated_at,1,10) as updated_at 
-    FROM COMMENT
-    LEFT JOIN users on users.id = user_id where posting_id = ${id}
-        order by comment.id asc;`
+    `SELECT Comment.id,user_id, posting_id, kor_name, comment, SUBSTRING(comment.created_at,1,10) as created_at, SUBSTRING(comment.updated_at,1,10) as updated_at 
+    FROM Comment
+    LEFT JOIN Users on Users.id = user_id where posting_id = ${id}
+        order by Comment.id asc;`
   );
   return allCommentsAfterModifying;
 };
 
 const modifiyComment = async (id, comment, user_id, comment_id) => {
   const [selectedComment] = await myDataSource.query(
-    `SELECT * FROM comment where id=${comment_id}`
+    `SELECT * FROM Comment where id=${comment_id}`
   );
   //댓글이 존재하지 않을 경우 에러 발생
   if (!selectedComment) {
@@ -42,10 +42,10 @@ const modifiyComment = async (id, comment, user_id, comment_id) => {
     throw error;
   }
   await myDataSource.query(
-    `UPDATE COMMENT SET comment='${comment}', user_id=${user_id}, posting_id=${id} WHERE id=${comment_id};`
+    `UPDATE Comment SET Comment='${comment}', user_id=${user_id}, posting_id=${id} WHERE id=${comment_id};`
   );
   const allCommentsAfterModifying = await myDataSource.query(
-    `SELECT * FROM COMMENT where posting_id = ${id} 
+    `SELECT * FROM Comment where posting_id = ${id} 
     order by created_at asc;`
   );
   return allCommentsAfterModifying;
@@ -55,7 +55,7 @@ const deleteComment = async (user_id, comment_id) => {
   console.log(user_id);
   console.log(comment_id);
   const [selectedComment] = await myDataSource.query(
-    `SELECT * FROM comment where id=${comment_id}`
+    `SELECT * FROM Comment where id=${comment_id}`
   );
   //댓글이 존재하지 않을 경우 에러 발생
   if (!selectedComment) {
@@ -70,7 +70,7 @@ const deleteComment = async (user_id, comment_id) => {
     error.statusCode = 404;
     throw error;
   }
-  await myDataSource.query(`DELETE FROM comment where id=${comment_id}`);
+  await myDataSource.query(`DELETE FROM Comment where id=${comment_id}`);
 };
 
 module.exports = { postComment, modifiyComment, deleteComment };

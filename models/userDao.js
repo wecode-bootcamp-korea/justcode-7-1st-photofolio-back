@@ -50,14 +50,14 @@ const createUserInDb = async (
 const findDbUser = async login_id => {
   const [dbUser] = await myDataSource.query(`
   SELECT id, email, kor_name, password, profile_image
-    FROM USERS WHERE login_id = '${login_id}'
+    FROM Users WHERE login_id = '${login_id}'
     `);
   return dbUser;
 };
 
 const getAccountInfo = async user_id => {
   const [userdata] = await myDataSource.query(`
-  SELECT * FROM USERS WHERE ID = '${user_id}';
+  SELECT * FROM Users WHERE ID = '${user_id}';
   `);
   return userdata;
 };
@@ -70,17 +70,17 @@ const modifyAccountInfo = async (
   nickname
 ) => {
   await myDataSource.query(
-    `UPDATE USERS SET kor_name='${kor_name}', eng_name='${eng_name}', email='${email}', nickname='${nickname}' WHERE id='${user_id}';`
+    `UPDATE Users SET kor_name='${kor_name}', eng_name='${eng_name}', email='${email}', nickname='${nickname}' WHERE id='${user_id}';`
   );
   const [userdata] = await myDataSource.query(`
-  SELECT * FROM USERS WHERE ID = '${user_id}';
+  SELECT * FROM Users WHERE ID = '${user_id}';
   `);
   return userdata;
 };
 
 const deleteAccount = async user_id => {
   await myDataSource.query(`SET foreign_key_checks = 0`);
-  await myDataSource.query(`DELETE FROM USERS WHERE id='${user_id}'`);
+  await myDataSource.query(`DELETE FROM Users WHERE id='${user_id}'`);
 };
 
 // const layerConnectionTest = async () => {
