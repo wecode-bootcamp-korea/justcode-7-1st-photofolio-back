@@ -8,6 +8,14 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+SET @@SESSION.SQL_LOG_BIN= 0;
+
+--
+-- GTID state at the beginning of the backup
+--
+
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '';
 
 --
 -- Table structure for table `Comment`
@@ -27,25 +35,10 @@ CREATE TABLE `Comment` (
   KEY `user_id` (`user_id`),
   KEY `posting_id` (`posting_id`),
   KEY `parent_comment_id` (`parent_comment_id`),
-  CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`),
-  CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`),
-  CONSTRAINT `comment_ibfk_3` FOREIGN KEY (`parent_comment_id`) REFERENCES `Comment` (`id`)
+  CONSTRAINT `Comment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`),
+  CONSTRAINT `Comment_ibfk_2` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`),
+  CONSTRAINT `Comment_ibfk_3` FOREIGN KEY (`parent_comment_id`) REFERENCES `Comment` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `file_sort`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `file_sort` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `file_sort` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,8 +56,8 @@ CREATE TABLE `Follow` (
   PRIMARY KEY (`id`),
   KEY `following_id` (`following_id`),
   KEY `follower_id` (`follower_id`),
-  CONSTRAINT `follow_ibfk_1` FOREIGN KEY (`following_id`) REFERENCES `Users` (`id`),
-  CONSTRAINT `follow_ibfk_2` FOREIGN KEY (`follower_id`) REFERENCES `Users` (`id`)
+  CONSTRAINT `Follow_ibfk_1` FOREIGN KEY (`following_id`) REFERENCES `Users` (`id`),
+  CONSTRAINT `Follow_ibfk_2` FOREIGN KEY (`follower_id`) REFERENCES `Users` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -83,56 +76,8 @@ CREATE TABLE `Notice` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `User_Admin_id` (`User_Admin_id`),
-  CONSTRAINT `notice_ibfk_1` FOREIGN KEY (`User_Admin_id`) REFERENCES `User_Admin` (`id`)
+  CONSTRAINT `Notice_ibfk_1` FOREIGN KEY (`User_Admin_id`) REFERENCES `User_Admin` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `public_status`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `public_status` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `status` varchar(50) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `schema_migrations`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `schema_migrations` (
-  `version` varchar(255) COLLATE latin1_bin NOT NULL,
-  PRIMARY KEY (`version`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `upload_file`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `upload_file` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `posting_id` int NOT NULL,
-  `file_sort_id` int NOT NULL,
-  `upload_url` varchar(255) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `posting_id` (`posting_id`),
-  KEY `file_sort_id` (`file_sort_id`),
-  CONSTRAINT `upload_file_ibfk_1` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`),
-  CONSTRAINT `upload_file_ibfk_2` FOREIGN KEY (`file_sort_id`) REFERENCES `file_sort` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -148,7 +93,7 @@ CREATE TABLE `User_Admin` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `users_id` (`users_id`),
-  CONSTRAINT `user_admin_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `Users` (`id`)
+  CONSTRAINT `User_Admin_ibfk_1` FOREIGN KEY (`users_id`) REFERENCES `Users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -217,9 +162,9 @@ CREATE TABLE `Works_Posting` (
   KEY `user_id` (`user_id`),
   KEY `category_id` (`category_id`),
   KEY `status_id` (`status_id`),
-  CONSTRAINT `works_posting_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`),
-  CONSTRAINT `works_posting_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `Works_Category` (`id`),
-  CONSTRAINT `works_posting_ibfk_3` FOREIGN KEY (`status_id`) REFERENCES `public_status` (`id`)
+  CONSTRAINT `Works_Posting_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`),
+  CONSTRAINT `Works_Posting_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `Works_Category` (`id`),
+  CONSTRAINT `Works_Posting_ibfk_3` FOREIGN KEY (`status_id`) REFERENCES `public_status` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -238,8 +183,8 @@ CREATE TABLE `Works_Posting_tags` (
   PRIMARY KEY (`id`),
   KEY `tag_id` (`tag_id`),
   KEY `posting_id` (`posting_id`),
-  CONSTRAINT `works_posting_tags_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `Works_tag_names` (`id`),
-  CONSTRAINT `works_posting_tags_ibfk_2` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`)
+  CONSTRAINT `Works_Posting_tags_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `Works_tag_names` (`id`),
+  CONSTRAINT `Works_Posting_tags_ibfk_2` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -275,9 +220,9 @@ CREATE TABLE `Works_Sympathy_Count` (
   KEY `user_id` (`user_id`),
   KEY `sympathy_id` (`sympathy_id`),
   KEY `posting_id` (`posting_id`),
-  CONSTRAINT `works_sympathy_count_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`),
-  CONSTRAINT `works_sympathy_count_ibfk_2` FOREIGN KEY (`sympathy_id`) REFERENCES `Works_Sympathy` (`id`),
-  CONSTRAINT `works_sympathy_count_ibfk_3` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`)
+  CONSTRAINT `Works_Sympathy_Count_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`),
+  CONSTRAINT `Works_Sympathy_Count_ibfk_2` FOREIGN KEY (`sympathy_id`) REFERENCES `Works_Sympathy` (`id`),
+  CONSTRAINT `Works_Sympathy_Count_ibfk_3` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -297,8 +242,72 @@ CREATE TABLE `Works_tag_names` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `file_sort`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `file_sort` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `file_sort` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `public_status`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `public_status` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `status` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `schema_migrations`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `schema_migrations` (
+  `version` varchar(255) COLLATE latin1_bin NOT NULL,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `upload_file`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `upload_file` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `posting_id` int NOT NULL,
+  `file_sort_id` int NOT NULL,
+  `upload_url` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `posting_id` (`posting_id`),
+  KEY `file_sort_id` (`file_sort_id`),
+  CONSTRAINT `upload_file_ibfk_1` FOREIGN KEY (`posting_id`) REFERENCES `Works_Posting` (`id`),
+  CONSTRAINT `upload_file_ibfk_2` FOREIGN KEY (`file_sort_id`) REFERENCES `file_sort` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Dumping routines for database 'photofolio'
 --
+SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
