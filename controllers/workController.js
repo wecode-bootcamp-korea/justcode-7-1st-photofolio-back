@@ -16,7 +16,7 @@ const followCheck = async (req, res) => {
 // 카테고리별 총 게시물 수 + 최신 feed list
 const worksList = async (req, res) => {
   try {
-    const { sort } = req.params;
+    const { sort } = req.query;
     const result = await workService.worksList(sort);
     res.status(200).json(result);
   } catch (err) {
