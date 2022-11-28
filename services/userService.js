@@ -1,5 +1,6 @@
 const userDao = require('../models/userDao');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const createUser = async (
   login_id,
@@ -28,7 +29,7 @@ const createUser = async (
     throw new Error('아이디는 공백 없이 입력해주세요.');
   }
 
-  const userId = await userDao.getUserByEmail(login_id);
+  const userId = await userDao.getUserById(login_id);
 
   if (userId.length !== 0) {
     throw new Error('해당 아이디가 이미 존재합니다.');
@@ -55,11 +56,11 @@ const createUser = async (
   }
 
   if (password.search(korAll) > 0) {
-    throw new Error('한글은 안되요.');
+    throw new Error('한글은 안돼요.');
   }
 
   if (kor_name.search(korWord) < 0 || kor_name.search(korJaMo) > 0) {
-    throw new Error('자음, 모음은 안되요.');
+    throw new Error('자음, 모음은 안돼요.');
   }
 
   if (kor_name.length < 2 || kor_name.length > 6) {
@@ -96,9 +97,11 @@ const createUser = async (
     throw new Error('해당 이메일이 이미 존재합니다.');
   }
 
+  const hashed_password = bcrypt.hashSync(password, bcrypt.genSaltSync());
+
   await userDao.createUserInDb(
     login_id,
-    password,
+    hashed_password,
     kor_name,
     eng_name,
     nickname,
@@ -120,7 +123,29 @@ const loginUser = async (login_id, password) => {
     error.statusCode = 400;
     throw error;
   }
-  return dbUser;
+
+  const name = dbUser.kor_name;
+  const profile = dbUser.profile_image;
+  const id = dbUser.id;
+  const userEmail = dbUser.email;
+  token = jwt.sign(
+    {
+      type: 'JWT',
+      name: name,
+      profile: profile,
+      id: id,
+      email: userEmail,
+    },
+    process.env.SECRET_KEY,
+    {
+      expiresIn: '300m',
+      issuer: '토큰발급자',
+    }
+  );
+
+  const result = { token, id, name, profile };
+
+  return result;
 };
 
 const getAccountInfo = async user_id => {
@@ -149,11 +174,6 @@ const deleteAccount = async user_id => {
   await userDao.deleteAccount(user_id);
 };
 
-// const layerConnectionTest = async () => {
-//   console.log('I am in userService1');
-//   await userDao.layerConnectionTest();
-//   console.log('I am in userService2');
-// };
 
 module.exports = {
   createUser,
