@@ -18,7 +18,15 @@ const validateToken = (req, res, next) => {
     // 요청 헤더에 저장된 토큰(req.headers.authorization)과 비밀키를 사용하여 토큰을 req.decoded에 반환
     const verifiedToken = jwt.verify(req.headers.token, process.env.SECRET_KEY);
     const user_id = verifiedToken.id;
+
+    //user_id undefined -> No user_id in req (good)
+
+    // SELECT id, name from USERS where user_id = user_id
+    // TODO - 8
+    // non-existing user error needs to be catched
+
     req.user_id = user_id;
+
     next();
   } catch (error) {
     // 인증 실패

@@ -27,6 +27,8 @@ const postComment = async (comment, id, user_id) => {
   return allCommentsAfterModifying;
 };
 
+
+// TODO 17 - functions in dao should do one behavior at a time
 const modifiyComment = async (id, comment, user_id, comment_id) => {
   const [selectedComment] = await myDataSource.query(
     `SELECT * FROM Comment where id=${comment_id}`
@@ -54,6 +56,7 @@ const modifiyComment = async (id, comment, user_id, comment_id) => {
 };
 
 const deleteComment = async (user_id, comment_id) => {
+  //TODO 18 remove console.log
   console.log(user_id);
   console.log(comment_id);
   const [selectedComment] = await myDataSource.query(
@@ -66,11 +69,40 @@ const deleteComment = async (user_id, comment_id) => {
     throw error;
   }
 
+  // errors.js 
+  class DoesNotExistError extends Error {
+    constructor(message) {
+      super(message + ' DOES NOT EXIST');
+      this.name = "DoesNotExistError";
+      this.statusCode = 404;
+    }
+  }
+
+  if (!selectedComment) {
+    throw new DoesNotExistError('COMMENT')
+  }
+
+  // TODO - 19 CustomerErrorClass
+
+  class WritterOnlyError extends Error {
+    constructor(message) {
+      super('ONLY WRITTER CAN ' + message + ' COMMENT');
+      this.name = "WritterOnlyError";
+      this.statusCode = 403;
+    }
+  }
+  // TODO 20
+  // 401 -> doesn't know the user (LOGIN_REQUIRED)
+  // 403 -> know user, user not permitted (UNAUTHORIZED)
+
   //로그인한 사용자와 댓글 작성자가 다를 경우 에러 발생
   if (selectedComment.user_id !== user_id) {
+    throw new WritterOnlyError('DELETE', 'COMMENT')
+
     const error = new Error('ONLY WRITER CAN DELETE COMMENT');
     error.statusCode = 404;
     throw error;
+
   }
   await myDataSource.query(`DELETE FROM Comment where id=${comment_id}`);
 };

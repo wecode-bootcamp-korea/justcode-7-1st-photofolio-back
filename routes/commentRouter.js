@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 
 // 토큰이 필요할시,
-const { validateToken } = require('../middlewares/validateToken');
 const commentController = require('../controllers/commentController');
 
-router.post('/', validateToken, commentController.postComment);
-router.patch('/', validateToken, commentController.modifiyComment);
-router.delete('/', validateToken, commentController.deleteComment);
+router.post('/', commentController.postComment);
+router.patch('/', commentController.modifiyComment);
+router.delete('/', commentController.deleteComment);
+
+// feed/23/comment
 
 module.exports = router;

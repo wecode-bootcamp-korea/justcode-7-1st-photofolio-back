@@ -3,7 +3,9 @@ const categoryDao = require('../models/categoryDao');
 // tag별 피드 개수
 const tagCount = async () => {
   try {
-    const result = await categoryDao.tagCount();
+    //TODO 10 - function name in DAO describe CRUD behavior with data.
+    // create, get(find), update, delete
+    const result = await categoryDao.getNumberOfTag();
     return result;
   } catch (err) {
     console.log(err);
@@ -14,7 +16,7 @@ const tagCount = async () => {
 // 카테고리별 피드 리스트
 const categoryList = async categoryName => {
   try {
-    const result = await categoryDao.categoryList(categoryName);
+    const result = await categoryDao.getCategoryList(categoryName);
     return result;
   } catch (err) {
     console.log(err);

@@ -34,6 +34,7 @@ const createUserInDb = async (
   email,
   profile_image
 ) => {
+  // TODO 9 - genSalt, has moved to service layer
   bcrypt.genSalt(10, (err, salt) => {
     bcrypt.hash(password, salt, (err, hash) => {
       myDataSource.query(`

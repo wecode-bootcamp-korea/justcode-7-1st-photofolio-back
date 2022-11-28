@@ -55,11 +55,11 @@ const createUser = async (
   }
 
   if (password.search(korAll) > 0) {
-    throw new Error('한글은 안되요.');
+    throw new Error('한글은 안돼요.');
   }
 
   if (kor_name.search(korWord) < 0 || kor_name.search(korJaMo) > 0) {
-    throw new Error('자음, 모음은 안되요.');
+    throw new Error('자음, 모음은 안돼요.');
   }
 
   if (kor_name.length < 2 || kor_name.length > 6) {

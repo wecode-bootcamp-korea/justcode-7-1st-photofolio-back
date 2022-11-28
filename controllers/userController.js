@@ -1,3 +1,4 @@
+//TODO 3- remove json
 const { json } = require('express');
 const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
@@ -68,6 +69,7 @@ const loginUser = async (req, res) => {
     });
 
     const result = await userService.loginUser(login_id, password);
+    // TODO 4 - 73~90 -> go to serviece layer
     const name = result.kor_name;
     const profile = result.profile_image;
     const id = result.id;
@@ -103,6 +105,7 @@ const loginUser = async (req, res) => {
 const getAccountInfo = async (req, res) => {
   try {
     user_id = req.user_id;
+    // TODO 5 - developers can test this error
     if (!user_id) {
       const error = new Error('No user_id in req');
       error.statusCode = 404;
@@ -120,6 +123,7 @@ const getAccountInfo = async (req, res) => {
 
 const modifyAccountInfo = async (req, res) => {
   try {
+    // TODO 6 - 127, 130~134 -> moved into validateToken function
     user_id = req.user_id;
     const { kor_name, eng_name, email, nickname } = req.body;
     const essentialKeys = { kor_name, eng_name, email, nickname };
@@ -161,7 +165,8 @@ const deleteAccount = async (req, res) => {
       throw error;
     }
     await userService.deleteAccount(user_id);
-    res.status(200).json({
+    // TODO 7 - delete : 204
+    res.status(204).json({
       message: `USER ${user_id}'s HAS BEEN REMOVED`,
     });
     console.log(`USER ${user_id}'s HAS BEEN REMOVED`);

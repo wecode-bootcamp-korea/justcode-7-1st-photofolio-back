@@ -278,11 +278,11 @@ const feed = async id => {
     let sympathyCount = await myDataSource.query(
       `
       SELECT COUNT(*) as total_sympathy_cnt
-      from Works_Sympathy_Count wsc 
-      left JOIN Works_Sympathy ws on ws.id  = wsc.sympathy_id 
-      left join Users u on u.id = wsc.user_id 
-      left join Works_Posting wp ON wsc.posting_id = wp.id 
-      where wp.id = '${id}'
+      FROM Works_Sympathy_Count wsc 
+      LEFT JOIN Works_Sympathy ws ON ws.id  = wsc.sympathy_id 
+      LEFT JOIN Users u ON u.id = wsc.user_id 
+      LEFT JOIN Works_Posting wp ON wsc.posting_id = wp.id 
+      WHERE wp.id = '${id}'
       `
     );
 

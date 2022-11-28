@@ -4,7 +4,8 @@ const postComment = async (req, res) => {
   try {
     user_id = req.user_id;
     // user_id = 작성자의 id
-    const { id, comment } = req.body;
+    // TODO - 13 feed Id
+    const { id:feedId, comment } = req.body;
     // id = 게시물의 id
     if (!comment) {
       //댓글 내용이 없을 경우 에러 발생
@@ -13,16 +14,17 @@ const postComment = async (req, res) => {
       throw error;
     }
     // 게시물id가 없을 경우 에러 발생
-    if (!id) {
+    if (!feedId) {
       const error = new Error('VALID POSTING ID NEEDED');
       error.statusCode = 404;
       throw error;
     }
     const postedComment = await commentService.postComment(
       comment,
-      id,
+      feedId,
       user_id
     );
+    //TODO 14 - 201 status code
     res.status(200).json({
       data: postedComment,
     });
@@ -37,6 +39,7 @@ const modifiyComment = async (req, res) => {
   try {
     user_id = req.user_id;
     //user_id = 작성자의 id
+    // TODO 15 - feed id not needed
     const { comment, id, comment_id } = req.body;
     //id = 게시물의 id
     //comment_id = 댓글의 id
